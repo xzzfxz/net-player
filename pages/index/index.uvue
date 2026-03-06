@@ -11,6 +11,24 @@
 
 	const test = () => {
 		console.log('test')
+		uni.request({
+			url: 'https://passportapi.115.com/open/refreshToken',
+			data: {
+				refresh_token: "sldkfjdslkfj"
+			},
+			header: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			method: 'POST',
+			success: ({ data, statusCode, header }) => {
+				console.log("success");
+			},
+			fail: (error) => {
+				console.log(error);
+			}
+		})
 	}
 </script>
 
