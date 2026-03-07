@@ -2,3 +2,4 @@
 
 require('vue');
 
+uni;

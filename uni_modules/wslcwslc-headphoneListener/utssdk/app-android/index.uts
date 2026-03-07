@@ -1,110 +1,129 @@
-/**
- * 引用 Android 系统库，示例如下：
- * import { Context } from "android.content.Context";
- * [可选实现，按需引入]
- */
+import Context from "android.content.Context"
+import Intent from 'android.content.Intent';
+import IntentFilter from 'android.content.IntentFilter';
+import BroadcastReceiver from 'android.content.BroadcastReceiver';
+import BluetoothDevice from 'android.bluetooth.BluetoothDevice';
+import BluetoothHeadset from "android.bluetooth.BluetoothHeadset"
+import KeyEvent from 'android.view.KeyEvent';
+import { parseKeyAction, parseConnectionState } from "./util.uts"
+import AudioManager from "android.media.AudioManager"
 
-/**
- * 更多插件开发的信息详见：https://uniapp.dcloud.net.cn/plugin/uts-plugin.html
- */
+type HeadphoneConnectEvent = {
+	deviceName : string;
+	connected : boolean;
+};
 
-import { Context } from "android.content.Context";
-import { Intent } from "android.content.Intent";
-import { IntentFilter } from "android.content.IntentFilter";
-import { BroadcastReceiver } from "android.content.BroadcastReceiver";
-import { KeyEvent } from "android.view.KeyEvent";
-import { BluetoothDevice } from "android.bluetooth.BluetoothDevice";
-
-// --- 定义类型接口 ---
-/**
- * 按键回调：返回键码 (keyCode)
- */
-type KeyCodeCallback = (keyCode : number) => void;
-
-/**
- * 状态回调：status ("CONNECTED" | "DISCONNECTED"), deviceName (设备名)
- */
-type StateCallback = (status : string, deviceName : string) => void;
-
-
-// --- 全局变量管理 ---
-let headsetReceiver : BroadcastReceiver | null = null;
-
-/**
- * 核心功能：开启全局耳机综合监听
- * @param keyCallback 处理按键事件的回调
- * @param stateCallback 处理连接状态变更的回调
- */
-export function startHeadsetMonitor(keyCallback : KeyCodeCallback, stateCallback : StateCallback) {
-    const context = UTSAndroid.getAppContext();
-    if (context == null) return;
-
-    // 如果已有监听，先移除旧的
-    stopHeadsetMonitor();
-
-    // 创建统一的广播接收器
-    headsetReceiver = new class extends BroadcastReceiver {
-        override onReceive(context : Context, intent : Intent) {
-            const action = intent.action;
-
-            // 1. 处理耳机按键事件 (蓝牙/有线通用)
-            if (Intent.ACTION_MEDIA_BUTTON == action) {
-                const event = intent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT);
-                if (event != null && event.action == KeyEvent.ACTION_DOWN) {
-                    keyCallback(event.keyCode);
-                }
-            }
-
-            // 2. 处理蓝牙设备连接/断开
-            if (BluetoothDevice.ACTION_ACL_CONNECTED == action) {
-                const device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE);
-                stateCallback("CONNECTED", device?.name ?: "Unknown Bluetooth Device");
-            } 
-            else if (BluetoothDevice.ACTION_ACL_DISCONNECTED == action) {
-                const device = intent.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE);
-                stateCallback("DISCONNECTED", device?.name ?: "Unknown Bluetooth Device");
-            }
-
-            // 3. 处理有线耳机插拔 (1=插入, 0=拨出)
-            if (Intent.ACTION_HEADSET_PLUG == action) {
-                const state = intent.getIntExtra("state", -1);
-                if (state == 1) {
-                    stateCallback("CONNECTED", "Wired Headset");
-                } else if (state == 0) {
-                    stateCallback("DISCONNECTED", "Wired Headset");
-                }
-            }
-        }
-    };
-
-    // 配置过滤器
-    const filter = new IntentFilter();
-    // 注册按键监听
-    filter.addAction(Intent.ACTION_MEDIA_BUTTON);
-    filter.priority = 2147483647; // 尽可能设置高优先级
-    
-    // 注册连接状态监听
-    filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
-    filter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-    filter.addAction(Intent.ACTION_HEADSET_PLUG);
-
-    // 注册到系统
-    context.registerReceiver(headsetReceiver, filter);
-    console.log("UTS-Headset: 耳机综合监听服务已启动");
+// 定义事件类型
+type HeadphoneKeyEvent {
+	type : 'key' | 'connection';
+	action ?: string;        // 对于按键事件
+	keyCode ?: number;       // 对于按键事件
+	deviceName ?: string;    // 对于连接事件
+	state ?: string;         // 对于连接事件
 }
 
-/**
- * 停止所有监听任务
- */
-export function stopHeadsetMonitor() {
-    const context = UTSAndroid.getAppContext();
-    if (context != null && headsetReceiver != null) {
-        try {
-            context.unregisterReceiver(headsetReceiver);
-        } catch (e) {
-            console.error("UTS-Headset: 卸载监听器失败", e);
-        }
-        headsetReceiver = null;
-        console.log("UTS-Headset: 监听服务已停止");
-    }
+class HeadPhoneReceiver extends BroadcastReceiver {
+	private callback : (event : HeadphoneKeyEvent) => void;
+
+	constructor(callback : (event : HeadphoneKeyEvent) => void) {
+		super();
+		this.callback = callback;
+	}
+
+	override onReceive(context : Context, intent : Intent) : void {
+		const action = intent.getAction();
+		console.log('收到广播: ' + action);
+		// 处理媒体按键事件
+		if (action === Intent.ACTION_MEDIA_BUTTON) {
+			const keyEvent = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT) as KeyEvent | null;
+			if (keyEvent !== null) {
+				const keyCode = keyEvent.getKeyCode();
+				const event : HeadphoneKeyEvent = {
+					type: 'key',
+					action: parseKeyAction(keyCode),
+					keyCode: keyCode
+				};
+				this.callback(event);
+			}
+		} else if (action === android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED) {
+			// 处理蓝牙连接状态事件
+			const state = intent.getIntExtra(android.bluetooth.BluetoothHeadset.EXTRA_STATE, -1);
+			// 修正：指定泛型类型为 android.bluetooth.BluetoothDevice
+			const device = intent.getParcelableExtra<android.bluetooth.BluetoothDevice>(android.bluetooth.BluetoothDevice.EXTRA_DEVICE);
+			let deviceName : string;
+			if (device != null) {
+				deviceName = device.getName();
+			} else {
+				deviceName = '未知设备';
+			}
+
+			const event : HeadphoneKeyEvent = {
+				type: 'connection',
+				deviceName: deviceName,
+				state: parseConnectionState(state)
+			};
+			this.callback(event);
+		}
+	}
+}
+
+let keyReceiver : HeadPhoneReceiver | null = null;
+let connectReceiver : BroadcastReceiver | null = null;
+
+// -------- 按键监听 --------
+export const startBluetoothListen = (callback : (event : HeadphoneKeyEvent) => void) : void => {
+	const context = UTSAndroid.getAppContext()!;
+	// 创建接收器实例
+	keyReceiver = new HeadPhoneReceiver(callback);
+	// 注册广播接收器
+	console.log("注册广播接收器")
+	try {
+		// 创建 IntentFilter
+		const filter = new IntentFilter();
+		// 监听媒体按键
+		filter.addAction(Intent.ACTION_MEDIA_BUTTON);
+		console.log("注册广播接收器1")
+		// 监听蓝牙连接状态
+		filter.addAction(android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+		// 设置高优先级确保能收到媒体按键
+		filter.setPriority(10000000);
+		console.log("注册广播接收器2")
+		// 注册接收器
+		context.registerReceiver(keyReceiver, filter);
+		console.log('蓝牙耳机监听已启动');
+		// ===== 关键：获取音频焦点 =====
+		const audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager;
+		if (audioManager !== null) {
+			// 请求音频焦点
+			const result = audioManager.requestAudioFocus(
+				null,
+				AudioManager.STREAM_MUSIC,
+				AudioManager.AUDIOFOCUS_GAIN
+			);
+
+			if (result === AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+				console.log('✅ 音频焦点获取成功 - 现在应该能接收耳机按键了');
+			} else {
+				console.log('❌ 音频焦点获取失败 - 可能无法接收耳机按键');
+			}
+		} else {
+			console.log('❌ 获取 AudioManager 失败');
+		}
+	} catch (e) {
+		console.error('注册广播接收器失败:', e);
+	}
+}
+
+// 导出停止监听的方法
+export const stopBluetoothListen = () => {
+	const context = UTSAndroid.getAppContext()!;
+	if (keyReceiver !== null) {
+		try {
+			context.unregisterReceiver(keyReceiver);
+			keyReceiver = null;
+			console.log('蓝牙耳机监听已停止');
+		} catch (e) {
+			console.error('注销广播接收器失败:', e);
+		}
+	}
 }

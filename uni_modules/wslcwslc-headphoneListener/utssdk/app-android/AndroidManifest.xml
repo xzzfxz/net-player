@@ -1,5 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.uni.headset">
-    <uses-permission android:name="android.permission.BLUETOOTH" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- 必要的权限 -->
+	<uses-permission android:name="android.permission.BLUETOOTH" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 	<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+	<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+	<uses-permission android:name="android.permission.MEDIA_CONTENT_CONTROL" />
+
+	<application>
+		<!-- 静态声明接收器，这是让系统能找到你的接收器的关键！ -->
+		<receiver android:name=".HeadPhoneReceiver"
+			android:enabled="true"
+			android:exported="true"> <!-- Android 12+ 必须声明 -->
+			<intent-filter android:priority="1000"> <!-- 设置最高优先级 -->
+				<action android:name="android.intent.action.MEDIA_BUTTON" />
+			</intent-filter>
+		</receiver>
+	</application>
 </manifest>

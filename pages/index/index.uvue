@@ -2,7 +2,7 @@
 	<view>
 		<image class="logo" src="/static/logo.png"></image>
 		<text class="title">{{title}}</text>
-		<button @click="test">测试</button>
+		<button @click="start">测试</button>
 	</view>
 </template>
 
@@ -12,17 +12,11 @@
 	// 这里的路径对应你创建时的插件名
 	import { startBluetoothListen, stopBluetoothListen } from "@/uni_modules/wslcwslc-headphoneListener";
 	
-	const lastKeyCode = ref(0);
 	
 	const start = () => {
 	    startBluetoothListen((res) => {
 	        console.log("收到原生按键消息:", res);
-	        lastKeyCode.value = res;
 	        
-	        // 逻辑判断示例
-	        if(res === 79 || res === 85) {
-	            uni.showToast({ title: '播放/暂停' });
-	        }
 	    });
 	};
 	

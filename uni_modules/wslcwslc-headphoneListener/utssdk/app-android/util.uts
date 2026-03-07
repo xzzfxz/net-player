@@ -1,0 +1,34 @@
+// 解析按键码
+export const parseKeyAction = (keyCode : number) : string => {
+	switch (keyCode) {
+		case android.view.KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+		case android.view.KeyEvent.KEYCODE_HEADSETHOOK:
+			return 'play_pause';
+		case android.view.KeyEvent.KEYCODE_MEDIA_NEXT:
+			return 'next';
+		case android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+			return 'previous';
+		case android.view.KeyEvent.KEYCODE_MEDIA_PLAY:
+			return 'play';
+		case android.view.KeyEvent.KEYCODE_MEDIA_PAUSE:
+			return 'pause';
+		case android.view.KeyEvent.KEYCODE_MEDIA_STOP:
+			return 'stop';
+		default:
+			return 'unknown';
+	}
+}
+
+// 解析连接状态
+export const parseConnectionState = (state : number) : string => {
+	switch (state) {
+		case android.bluetooth.BluetoothHeadset.STATE_CONNECTED:
+			return 'connected';
+		case android.bluetooth.BluetoothHeadset.STATE_DISCONNECTED:
+			return 'disconnected';
+		case android.bluetooth.BluetoothHeadset.STATE_CONNECTING:
+			return 'connecting';
+		default:
+			return 'unknown';
+	}
+}

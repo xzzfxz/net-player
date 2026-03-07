@@ -1,4 +1,7 @@
-
+import { startBluetoothListen, stopBluetoothListen } from "@/uni_modules/wslcwslc-headphoneListener";
+	
+	
+	
 const __sfc__ = defineComponent({
   __name: 'index',
   setup(__props) {
@@ -7,6 +10,40 @@ const _ctx = __ins.proxy as InstanceType<typeof __sfc__>;
 const _cache = __ins.renderCache;
 
 	const title = ref('Hello')
+	
+	// 这里的路径对应你创建时的插件名
+	const start = () => {
+	    startBluetoothListen((res) => {
+	        console.log("收到原生按键消息:", res, " at pages/index/index.uvue:18");
+	        
+	    });
+	};
+	
+	const stop = () => {
+	    stopBluetoothListen();
+	};
+
+	const test = () => {
+		console.log('test', " at pages/index/index.uvue:28")
+		uni.request({
+			url: 'https://passportapi.115.com/open/refreshToken',
+			data: {
+				refresh_token: "sldkfjdslkfj"
+			},
+			header: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			method: 'POST',
+			success: ({ data, statusCode, header }) => {
+				console.log("success", " at pages/index/index.uvue:41");
+			},
+			fail: (error) => {
+				console.log(error, " at pages/index/index.uvue:44");
+			}
+		})
+	}
 
 return (): any | null => {
 
@@ -16,7 +53,7 @@ return (): any | null => {
       src: "/static/logo.png"
     })),
     _cE("text", _uM({ class: "title" }), _tD(unref(title)), 1 /* TEXT */),
-    _cE("button")
+    _cE("button", _uM({ onClick: start }), "测试")
   ])
 }
 }

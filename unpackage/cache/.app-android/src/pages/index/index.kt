@@ -12,6 +12,8 @@ import io.dcloud.uts.Map
 import io.dcloud.uts.Set
 import io.dcloud.uts.UTSAndroid
 import kotlin.properties.Delegates
+import uts.sdk.modules.wslcwslcHeadphoneListener.startBluetoothListen
+import uts.sdk.modules.wslcwslcHeadphoneListener.stopBluetoothListen
 open class GenPagesIndexIndex : BasePage {
     constructor(__ins: ComponentInternalInstance, __renderer: String?) : super(__ins, __renderer) {}
     companion object {
@@ -21,11 +23,17 @@ open class GenPagesIndexIndex : BasePage {
             val _ctx = __ins.proxy as GenPagesIndexIndex
             val _cache = __ins.renderCache
             val title = ref("Hello")
+            val start = fun(){
+                startBluetoothListen(fun(res){
+                    console.log("收到原生按键消息:", res, " at pages/index/index.uvue:18")
+                }
+                )
+            }
             return fun(): Any? {
                 return _cE("view", null, _uA(
                     _cE("image", _uM("class" to "logo", "src" to "/static/logo.png")),
                     _cE("text", _uM("class" to "title"), _tD(unref(title)), 1),
-                    _cE("button")
+                    _cE("button", _uM("onClick" to start), "测试")
                 ))
             }
         }

@@ -5,11 +5,11 @@
   },
   "files": {
     "index.kt": {
-      "class": "",
-      "md5": "ac2d4a32b6f9b6c1e5071662ba77b10f3c18fcdf"
+      "md5": "2fc642a5c5a2fda9d26727d6e7e3dcc1901ebc99",
+      "class": ""
     },
     "pages/index/index.kt": {
-      "md5": "023c3ccbed3e00abe14d6503fb0e3d411c999649",
+      "md5": "add10f93913f72160261cd6025cafc4d6036fcb1",
       "class": "GenPagesIndexIndex"
     }
   }
