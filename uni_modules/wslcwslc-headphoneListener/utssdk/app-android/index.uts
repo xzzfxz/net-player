@@ -45,9 +45,9 @@ class HeadPhoneReceiver extends BroadcastReceiver {
 				};
 				this.callback(event);
 			}
-		} else if (action === android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED) {
+		} else if (action === BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED) {
 			// 处理蓝牙连接状态事件
-			const state = intent.getIntExtra(android.bluetooth.BluetoothHeadset.EXTRA_STATE, -1);
+			const state = intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, -1);
 			// 修正：指定泛型类型为 android.bluetooth.BluetoothDevice
 			const device = intent.getParcelableExtra<android.bluetooth.BluetoothDevice>(android.bluetooth.BluetoothDevice.EXTRA_DEVICE);
 			let deviceName : string;
@@ -76,21 +76,23 @@ export const startBluetoothListen = (callback : (event : HeadphoneKeyEvent) => v
 	// 创建接收器实例
 	keyReceiver = new HeadPhoneReceiver(callback);
 	// 注册广播接收器
-	console.log("注册广播接收器")
+	console.log("开始注册蓝牙耳机监听")
 	try {
 		// 创建 IntentFilter
 		const filter = new IntentFilter();
 		// 监听媒体按键
 		filter.addAction(Intent.ACTION_MEDIA_BUTTON);
-		console.log("注册广播接收器1")
+		console.log("添加媒体按键监听")
 		// 监听蓝牙连接状态
-		filter.addAction(android.bluetooth.BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+		filter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+		console.log("添加蓝牙连接状态监听")
 		// 设置高优先级确保能收到媒体按键
 		filter.setPriority(10000000);
-		console.log("注册广播接收器2")
+		console.log("设置优先级:", filter.getPriority())
 		// 注册接收器
 		context.registerReceiver(keyReceiver, filter);
-		console.log('蓝牙耳机监听已启动');
+		console.log('✅ 蓝牙耳机监听已启动');
+		
 		// ===== 关键：获取音频焦点 =====
 		const audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager;
 		if (audioManager !== null) {
@@ -110,7 +112,7 @@ export const startBluetoothListen = (callback : (event : HeadphoneKeyEvent) => v
 			console.log('❌ 获取 AudioManager 失败');
 		}
 	} catch (e) {
-		console.error('注册广播接收器失败:', e);
+		console.error('❌ 注册广播接收器失败:', e);
 	}
 }
 
