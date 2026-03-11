@@ -1,0 +1,13 @@
+import BroadcastReceiver from "android.content.BroadcastReceiver"
+import Intent from 'android.content.Intent';
+
+export class HeadSetReceiver extends BroadcastReceiver {
+  private callback: Function
+  constructor(callback: Function) {
+    this.callback = callback
+  }
+  // 重写onReceive事件
+  onReceive(context, intent) {
+    console.log("收到广播: " + intent.getAction());
+  } 
+}

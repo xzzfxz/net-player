@@ -1,62 +1,147 @@
 <template>
-	<view>
-		<image class="logo" src="/static/logo.png"></image>
-		<text class="title">{{title}}</text>
-		<button @click="start">测试</button>
-	</view>
+  <view>
+    <image class="logo" src="/static/logo.png"></image>
+    <button @click="initMediaSession">测试</button>
+  </view>
 </template>
 
-<script setup lang="uts">
-	const title = ref('Hello')
-	
-	// 这里的路径对应你创建时的插件名
-	import { startBluetoothListen, stopBluetoothListen } from "@/uni_modules/wslcwslc-headphoneListener";
-	
-	
-	const start = () => {
-	    startBluetoothListen((res) => {
-	        console.log("收到原生按键消息:", res);
-	        
-	    });
-	};
-	
-	const stop = () => {
-	    stopBluetoothListen();
-	};
+<script lang="uts">
+// index.uts
+import { ComponentPublicInstance } from 'vue'
 
-	const test = () => {
-		console.log('test')
-		uni.request({
-			url: 'https://passportapi.115.com/open/refreshToken',
-			data: {
-				refresh_token: "sldkfjdslkfj"
-			},
-			header: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-				'X-Requested-With': 'XMLHttpRequest'
-			},
-			method: 'POST',
-			success: ({ data, statusCode, header }) => {
-				console.log("success");
-			},
-			fail: (error) => {
-				console.log(error);
-			}
-		})
-	}
+// #ifdef APP-ANDROID
+import { MediaSessionCompat } from 'androidx.media.session.MediaSessionCompat';
+import { Context } from 'android.content.Context';
+import { ComponentActivity } from 'androidx.activity.ComponentActivity';
+import { KeyEvent } from 'android.view.KeyEvent';
+// #endif
+
+export default {
+    data() {
+        return {
+            isPlaying: false,
+            mediaSession: null as any
+        }
+    },
+    onLoad() {
+        // #ifdef APP-ANDROID
+        // this.initMediaSession()
+        // #endif
+    },
+    methods: {
+        // #ifdef APP-ANDROID
+        initMediaSession() {
+            // 获取当前 Activity
+            const activity = this.$page?.getActivity?.() as ComponentActivity;
+            if (!activity) return;
+
+            // 创建 MediaSession
+            this.mediaSession = new MediaSessionCompat(activity, 'MyMediaSession');
+
+            // 设置标志
+            this.mediaSession.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+            );
+
+            // 设置回调 - 使用 uts 的匿名类实现
+            const callback = new MediaSessionCompat.Callback({
+                onPlay: () => {
+                    console.log('播放键被按下');
+                    this.handlePlay();
+                },
+                onPause: () => {
+                    console.log('暂停键被按下');
+                    this.handlePause();
+                },
+                onSkipToNext: () => {
+                    console.log('下一首键被按下');
+                    this.handleNext();
+                },
+                onSkipToPrevious: () => {
+                    console.log('上一首键被按下');
+                    this.handlePrevious();
+                },
+                onMediaButtonEvent: (intent: any) => {
+                    // 获取原始的按键事件
+                    const keyEvent = intent.getParcelableExtra(Intent.EXTRA_KEY_EVENT) as KeyEvent;
+                    if (keyEvent && keyEvent.getAction() === KeyEvent.ACTION_DOWN) {
+                        const keyCode = keyEvent.getKeyCode();
+                        console.log('原始按键码:', keyCode);
+
+                        // 可以在这里处理一些特殊的按键
+                        if (keyCode === KeyEvent.KEYCODE_MEDIA_PLAY) {
+                            // 处理播放
+                        }
+                    }
+                    return false; // 返回 false 让 MediaSession 继续处理
+                }
+            });
+
+            this.mediaSession.setCallback(callback);
+
+            // 激活 MediaSession
+            this.mediaSession.setActive(true);
+
+            console.log('MediaSession 初始化成功');
+        },
+        // #endif
+
+        handlePlay() {
+            this.isPlaying = true;
+            // 你的播放逻辑
+            uni.showToast({
+                title: '播放',
+                icon: 'none'
+            });
+        },
+
+        handlePause() {
+            this.isPlaying = false;
+            // 你的暂停逻辑
+            uni.showToast({
+                title: '暂停',
+                icon: 'none'
+            });
+        },
+
+        handleNext() {
+            // 下一首逻辑
+            uni.showToast({
+                title: '下一首',
+                icon: 'none'
+            });
+        },
+
+        handlePrevious() {
+            // 上一首逻辑
+            uni.showToast({
+                title: '上一首',
+                icon: 'none'
+            });
+        }
+    },
+    onUnload() {
+        // #ifdef APP-ANDROID
+        // 释放资源
+        if (this.mediaSession) {
+            this.mediaSession.release();
+        }
+        // #endif
+    }
+}
 </script>
 
 <style>
-	.logo {
-		height: 100px;
-		width: 100px;
-		margin: 100px auto 25px auto;
-	}
+.logo {
+  height: 100px;
+  width: 100px;
+  margin: 100px auto 25px auto;
+}
 
-	.title {
-		font-size: 18px;
-		color: #8f8f94;
-		text-align: center;
-	}
+.title {
+  font-size: 18px;
+  color: #8f8f94;
+  text-align: center;
+}
 </style>
