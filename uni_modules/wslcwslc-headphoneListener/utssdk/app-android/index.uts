@@ -6,6 +6,7 @@ let mSession : MediaSession | null = null;
 
 class MedialCallback extends MediaSession.Callback {
 	override onMediaButtonEvent(mediaButtonIntent : Intent) : boolean {
+		console.log("收到媒体按键信息")
 		const event = mediaButtonIntent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT);
 		if (event != null && event.getAction() == KeyEvent.ACTION_DOWN) {
 			const keyCode = event.getKeyCode();
