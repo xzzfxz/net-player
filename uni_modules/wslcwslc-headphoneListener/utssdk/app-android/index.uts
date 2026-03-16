@@ -1,7 +1,6 @@
 
 import MediaSession from "android.media.session.MediaSession";
 import Context from "android.content.Context"
-import IntentFilter from 'android.content.IntentFilter'
 import AudioManager from 'android.media.AudioManager';
 import AudioDeviceCallback from 'android.media.AudioDeviceCallback';
 import { MedialCallback, ConnectionReceiver, DeviceCallback } from "./receiver.uts"
@@ -9,8 +8,8 @@ import { IConnectionFunc } from "./interface.uts"
 
 let mSession : MediaSession | null = null;
 let connectionReceiver : ConnectionReceiver | null = null;
-let audioManager: AudioManager | null = null;
-let deviceCallback: AudioDeviceCallback | null = null;
+let audioManager : AudioManager | null = null;
+let deviceCallback : AudioDeviceCallback | null = null;
 
 // 监听媒体按键
 export const startBluetoothListen = () => {

@@ -31,11 +31,11 @@ export class DeviceCallback extends AudioDeviceCallback {
 		super()
 	}
 	
-	// override onAudioDevicesAdded(addedDevices :  AudioDeviceInfo[] | null | undefined): void {
-	// 	// 连接成功
-	// 	console.log("蓝牙连接成功")
-	// 	console.log(addedDevices)
-	// }
+	override onAudioDevicesAdded(addedDevices: AudioDeviceInfo[] | null | undefined): void {
+		// 连接成功
+		console.log("蓝牙连接成功")
+		console.log(addedDevices)
+	}
 
 	// override onAudioDevicesRemoved(removedDevices :  AudioDeviceInfo[] | null | undefined) {
 	// 	// 断开连接
