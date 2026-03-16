@@ -51,7 +51,14 @@
 			},
 			"splashScreens": {
 				"default": {}
-			}
+			},
+			"permissions": [
+				"<receiver android:name=\"io.dcloud.feature.internal.reflect.BroadcastReceiver\" android:exported=\"true\">",
+				"    <intent-filter android:priority=\"1000\">",
+				"        <action android:name=\"android.intent.action.MEDIA_BUTTON\" />",
+				"    </intent-filter>",
+				"</receiver>"
+			]
 		}
 	},
 	"app-ios": {

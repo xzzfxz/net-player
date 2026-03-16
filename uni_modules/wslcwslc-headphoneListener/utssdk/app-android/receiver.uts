@@ -1,13 +1,15 @@
 import BroadcastReceiver from "android.content.BroadcastReceiver"
-import Intent from 'android.content.Intent';
+
+import {ICallbackFunc} from "./interface.uts"
 
 export class HeadSetReceiver extends BroadcastReceiver {
-  private callback: Function
-  constructor(callback: Function) {
+  private callback: ICallbackFunc
+  constructor(callback: ICallbackFunc) {
+	  super();
     this.callback = callback
   }
   // 重写onReceive事件
-  onReceive(context, intent) {
+  override onReceive(context, intent) {
     console.log("收到广播: " + intent.getAction());
   } 
 }

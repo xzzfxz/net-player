@@ -10,19 +10,13 @@
 	const title = ref('Hello')
 	
 	// 这里的路径对应你创建时的插件名
-	import { startBluetoothListen, stopBluetoothListen } from "@/uni_modules/wslcwslc-headphoneListener";
+	import { startBluetoothListen } from "@/uni_modules/wslcwslc-headphoneListener";
 	
 	
 	const start = () => {
-	    startBluetoothListen((res) => {
-	        console.log("收到原生按键消息:", res);
-	        
-	    });
+	    startBluetoothListen();
 	};
 	
-	const stop = () => {
-	    stopBluetoothListen();
-	};
 
 	const test = () => {
 		console.log('test')
