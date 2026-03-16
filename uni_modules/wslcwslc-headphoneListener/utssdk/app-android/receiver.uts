@@ -1,15 +1,76 @@
 import BroadcastReceiver from "android.content.BroadcastReceiver"
+import Context from "android.content.Context"
+import Intent from "android.content.Intent";
+import KeyEvent from "android.view.KeyEvent";
+import MediaSession from "android.media.session.MediaSession";
+import AudioManager from 'android.media.AudioManager';
+import AudioDeviceCallback from 'android.media.AudioDeviceCallback';
+import AudioDeviceInfo from 'android.media.AudioDeviceInfo';
 
-import {ICallbackFunc} from "./interface.uts"
+import { IConnectionFunc } from "./interface.uts"
 
-export class HeadSetReceiver extends BroadcastReceiver {
-  private callback: ICallbackFunc
-  constructor(callback: ICallbackFunc) {
-	  super();
-    this.callback = callback
-  }
-  // 重写onReceive事件
-  override onReceive(context, intent) {
-    console.log("收到广播: " + intent.getAction());
-  } 
+// 连接状态
+export class ConnectionReceiver extends BroadcastReceiver {
+	private callback : IConnectionFunc
+	constructor(callback : IConnectionFunc) {
+		super();
+		this.callback = callback
+	}
+	// 重写onReceive事件
+	override onReceive(context : Context, intent : Intent) {
+		console.log("收到广播: " + intent.getAction());
+		if (intent.getAction() == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
+			// 蓝牙断开连接
+			console.log("蓝牙断开连接")
+			this.callback()
+		}
+	}
+}
+export class DeviceCallback extends AudioDeviceCallback {
+	constructor() {
+		super()
+	}
+	
+	// override onAudioDevicesAdded(addedDevices :  AudioDeviceInfo[] | null | undefined): void {
+	// 	// 连接成功
+	// 	console.log("蓝牙连接成功")
+	// 	console.log(addedDevices)
+	// }
+
+	// override onAudioDevicesRemoved(removedDevices :  AudioDeviceInfo[] | null | undefined) {
+	// 	// 断开连接
+	// 	console.log("断开连接")
+	// 	console.log(removedDevices)
+	// }
+}
+
+// 媒体按键
+export class MedialCallback extends MediaSession.Callback {
+	constructor() {
+		super()
+	}
+
+	@Suppress("DEPRECATION")
+	override onMediaButtonEvent(mediaButtonIntent : Intent) : boolean {
+		console.log("收到媒体按键信息")
+		const event = mediaButtonIntent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT);
+		if (event != null && event.getAction() == KeyEvent.ACTION_DOWN) {
+			const keyCode = event.getKeyCode();
+			console.log("检测到按键按下，KeyCode:", keyCode);
+			// 判断按键类型
+			// KEYCODE_MEDIA_PLAY_PAUSE
+			if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
+				console.log("播放键");
+			} else if (keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE) {
+				console.log("暂停键")
+			} else if (keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS) {
+				console.log("上一曲")
+			} else if (keyCode == KeyEvent.KEYCODE_MEDIA_NEXT) {
+				console.log("下一曲");
+			}
+			// 返回 true 表示你已处理该事件，不再向系统广播
+			return true;
+		}
+		return super.onMediaButtonEvent(mediaButtonIntent);
+	}
 }

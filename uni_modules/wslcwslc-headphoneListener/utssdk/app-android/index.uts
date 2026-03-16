@@ -1,30 +1,18 @@
-import Intent from "android.content.Intent";
-import KeyEvent from "android.view.KeyEvent";
+
 import MediaSession from "android.media.session.MediaSession";
+import Context from "android.content.Context"
+import IntentFilter from 'android.content.IntentFilter'
+import AudioManager from 'android.media.AudioManager';
+import AudioDeviceCallback from 'android.media.AudioDeviceCallback';
+import { MedialCallback, ConnectionReceiver, DeviceCallback } from "./receiver.uts"
+import { IConnectionFunc } from "./interface.uts"
 
 let mSession : MediaSession | null = null;
+let connectionReceiver : ConnectionReceiver | null = null;
+let audioManager: AudioManager | null = null;
+let deviceCallback: AudioDeviceCallback | null = null;
 
-class MedialCallback extends MediaSession.Callback {
-	override onMediaButtonEvent(mediaButtonIntent : Intent) : boolean {
-		console.log("收到媒体按键信息")
-		const event = mediaButtonIntent.getParcelableExtra<KeyEvent>(Intent.EXTRA_KEY_EVENT);
-		if (event != null && event.getAction() == KeyEvent.ACTION_DOWN) {
-			const keyCode = event.getKeyCode();
-			console.log("检测到按键按下，KeyCode:", keyCode);
-
-			// 判断按键类型
-			if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
-				console.log("播放键");
-			} else if (keyCode == KeyEvent.KEYCODE_MEDIA_NEXT) {
-				console.log("下一曲");
-			}
-			// 返回 true 表示你已处理该事件，不再向系统广播
-			return true;
-		}
-		return super.onMediaButtonEvent(mediaButtonIntent);
-	}
-}
-
+// 监听媒体按键
 export const startBluetoothListen = () => {
 	const context = UTSAndroid.getAppContext();
 	if (context == null) return;
@@ -32,5 +20,15 @@ export const startBluetoothListen = () => {
 	mSession = new MediaSession(context, "MyMediaSession");
 	// 2. 设置回调监听按键
 	mSession!.setCallback(new MedialCallback());
+	console.log("开始监听......")
+}
 
+// 监听蓝牙连接状态
+export const startConnectionListen = (callback : IConnectionFunc) => {
+	const context = UTSAndroid.getAppContext();
+	if (context == null) return;
+	audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager;
+	deviceCallback = new DeviceCallback()
+	audioManager?.registerAudioDeviceCallback(deviceCallback, null);
+	console.log("监听连接状态......")
 }

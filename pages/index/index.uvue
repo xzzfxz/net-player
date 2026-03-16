@@ -2,7 +2,8 @@
 	<view>
 		<image class="logo" src="/static/logo.png"></image>
 		<text class="title">{{title}}</text>
-		<button @click="start">测试</button>
+		<button @click="start">媒体</button>
+		<button @click="testConnect">连接</button>
 	</view>
 </template>
 
@@ -10,12 +11,17 @@
 	const title = ref('Hello')
 	
 	// 这里的路径对应你创建时的插件名
-	import { startBluetoothListen } from "@/uni_modules/wslcwslc-headphoneListener";
+	import { startBluetoothListen, startConnectionListen } from "@/uni_modules/wslcwslc-headphoneListener";
 	
 	
 	const start = () => {
 	    startBluetoothListen();
 	};
+	const testConnect = () => {
+		startConnectionListen(() => {
+			console.log("监听到断开连接了")
+		})
+	}
 	
 
 	const test = () => {

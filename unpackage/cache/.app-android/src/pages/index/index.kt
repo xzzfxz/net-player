@@ -1,4 +1,4 @@
-@file:Suppress("UNCHECKED_CAST", "USELESS_CAST", "INAPPLICABLE_JVM_NAME", "UNUSED_ANONYMOUS_PARAMETER", "NAME_SHADOWING", "UNNECESSARY_NOT_NULL_ASSERTION")
+@file:Suppress("UNCHECKED_CAST", "USELESS_CAST", "INAPPLICABLE_JVM_NAME", "UNUSED_ANONYMOUS_PARAMETER", "SENSELESS_COMPARISON", "NAME_SHADOWING", "UNNECESSARY_NOT_NULL_ASSERTION")
 package uni.UNI1F1A2E6
 import io.dcloud.uniapp.*
 import io.dcloud.uniapp.extapi.*
@@ -13,7 +13,7 @@ import io.dcloud.uts.Set
 import io.dcloud.uts.UTSAndroid
 import kotlin.properties.Delegates
 import uts.sdk.modules.wslcwslcHeadphoneListener.startBluetoothListen
-import uts.sdk.modules.wslcwslcHeadphoneListener.stopBluetoothListen
+import uts.sdk.modules.wslcwslcHeadphoneListener.startConnectionListen
 open class GenPagesIndexIndex : BasePage {
     constructor(__ins: ComponentInternalInstance, __renderer: String?) : super(__ins, __renderer) {}
     companion object {
@@ -24,8 +24,11 @@ open class GenPagesIndexIndex : BasePage {
             val _cache = __ins.renderCache
             val title = ref("Hello")
             val start = fun(){
-                startBluetoothListen(fun(res){
-                    console.log("收到原生按键消息:", res, " at pages/index/index.uvue:18")
+                startBluetoothListen()
+            }
+            val testConnect = fun(){
+                startConnectionListen(fun(){
+                    console.log("监听到断开连接了", " at pages/index/index.uvue:22")
                 }
                 )
             }
@@ -33,15 +36,14 @@ open class GenPagesIndexIndex : BasePage {
                 return _cE("view", null, _uA(
                     _cE("image", _uM("class" to "logo", "src" to "/static/logo.png")),
                     _cE("text", _uM("class" to "title"), _tD(unref(title)), 1),
-                    _cE("button", _uM("onClick" to start), "测试")
+                    _cE("button", _uM("onClick" to start), "媒体"),
+                    _cE("button", _uM("onClick" to testConnect), "连接")
                 ))
             }
         }
         val styles: Map<String, Map<String, Map<String, Any>>> by lazy {
             _nCS(_uA(
                 styles0
-            ), _uA(
-                GenApp.styles
             ))
         }
         val styles0: Map<String, Map<String, Map<String, Any>>>

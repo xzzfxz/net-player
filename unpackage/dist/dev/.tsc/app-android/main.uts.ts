@@ -1,4 +1,4 @@
-import '/Applications/HBuilderX.app/Contents/HBuilderX/plugins/uniapp-cli-vite/node_modules/@dcloudio/uni-console/src/runtime/app/index.ts';import App from './App.uvue'
+import 'C:/Program Files/HBuilderX/plugins/uniapp-cli-vite/node_modules/@dcloudio/uni-console/src/runtime/app/index.ts';import App from './App.uvue'
 
 import { createSSRApp } from 'vue'
 export function createApp() {
@@ -18,7 +18,7 @@ export class UniAppConfig extends io.dcloud.uniapp.appframe.AppConfig {
     override appid: string = "__UNI__1F1A2E6"
     override versionName: string = "1.0.0"
     override versionCode: string = "100"
-    override uniCompilerVersion: string = "4.87"
+    override uniCompilerVersion: string = "5.03"
     
     constructor() { super() }
 }

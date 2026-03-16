@@ -1,4 +1,4 @@
-import { startBluetoothListen, stopBluetoothListen } from "@/uni_modules/wslcwslc-headphoneListener";
+import { startBluetoothListen, startConnectionListen } from "@/uni_modules/wslcwslc-headphoneListener";
 	
 	
 	
@@ -13,15 +13,14 @@ const _cache = __ins.renderCache;
 	
 	// 这里的路径对应你创建时的插件名
 	const start = () => {
-	    startBluetoothListen((res) => {
-	        console.log("收到原生按键消息:", res, " at pages/index/index.uvue:18");
-	        
-	    });
+	    startBluetoothListen();
 	};
+	const testConnect = () => {
+		startConnectionListen(() => {
+			console.log("监听到断开连接了", " at pages/index/index.uvue:22")
+		})
+	}
 	
-	const stop = () => {
-	    stopBluetoothListen();
-	};
 
 	const test = () => {
 		console.log('test', " at pages/index/index.uvue:28")
@@ -53,7 +52,8 @@ return (): any | null => {
       src: "/static/logo.png"
     })),
     _cE("text", _uM({ class: "title" }), _tD(unref(title)), 1 /* TEXT */),
-    _cE("button", _uM({ onClick: start }), "测试")
+    _cE("button", _uM({ onClick: start }), "媒体"),
+    _cE("button", _uM({ onClick: testConnect }), "连接")
   ])
 }
 }
