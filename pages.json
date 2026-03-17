@@ -14,10 +14,10 @@
 		}
 	],
 	"tabBar": {
-		"color": "#7A7E83",
-		"selectedColor": "#3cc51f",
+		"color": "#fff",
+		"selectedColor": "#4CE2E1",
 		"borderStyle": "black",
-		"backgroundColor": "#ffffff",
+		"backgroundColor": "rgba(12, 9, 79, 1)",
 		"list": [{
 			"pagePath": "pages/index/index",
 			"iconPath": "static/image/home.png",
@@ -26,15 +26,14 @@
 		}, {
 			"pagePath": "pages/my/my",
 			"iconPath": "static/image/my.png",
-			"selectedIconPath": "static/image/my-se",
+			"selectedIconPath": "static/image/my-sel.png",
 			"text": "我的"
 		}]
 	},
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app x",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarTextStyle": "#fff",
+		"navigationBarBackgroundColor": "#0F0A4D",
+		"backgroundColor": "#0F0A4D"
 	},
 	"uniIdRouter": {}
 }

@@ -102,7 +102,7 @@ fun tryConnectSocket(host: String, port: String, id: String): UTSPromise<SocketT
 fun initRuntimeSocketService(): UTSPromise<Boolean> {
     val hosts: String = "198.18.0.1,192.168.178.17,127.0.0.1"
     val port: String = "8090"
-    val id: String = "app-android_cQE9oN"
+    val id: String = "app-android_EU36Vz"
     if (hosts == "" || port == "" || id == "") {
         return UTSPromise.resolve(false)
     }
@@ -212,18 +212,18 @@ fun definePageRoutes() {
     __uniRoutes.push(UniPageRoute(path = "pages/index/index", component = GenPagesIndexIndexClass, meta = UniPageMeta(isQuit = true), style = _uM("navigationBarTitleText" to "首页")))
     __uniRoutes.push(UniPageRoute(path = "pages/my/my", component = GenPagesMyMyClass, meta = UniPageMeta(isQuit = false), style = _uM("navigationBarTitleText" to "我的")))
 }
-val __uniTabBar: Map<String, Any?>? = _uM("color" to "#7A7E83", "selectedColor" to "#3cc51f", "borderStyle" to "black", "backgroundColor" to "#ffffff", "list" to _uA(
+val __uniTabBar: Map<String, Any?>? = _uM("color" to "#fff", "selectedColor" to "#4CE2E1", "borderStyle" to "black", "backgroundColor" to "rgba(12, 9, 79, 1)", "list" to _uA(
     _uM("pagePath" to "pages/index/index", "iconPath" to "static/image/home.png", "selectedIconPath" to "static/image/home-sel.png", "text" to "首页"),
-    _uM("pagePath" to "pages/my/my", "iconPath" to "static/image/my.png", "selectedIconPath" to "static/image/my-se", "text" to "我的")
+    _uM("pagePath" to "pages/my/my", "iconPath" to "static/image/my.png", "selectedIconPath" to "static/image/my-sel.png", "text" to "我的")
 ))
 val __uniLaunchPage: Map<String, Any?> = _uM("url" to "pages/index/index", "style" to _uM("navigationBarTitleText" to "首页"))
 fun defineAppConfig() {
     __uniConfig.entryPagePath = "/pages/index/index"
-    __uniConfig.globalStyle = _uM("navigationBarTextStyle" to "black", "navigationBarTitleText" to "uni-app x", "navigationBarBackgroundColor" to "#F8F8F8", "backgroundColor" to "#F8F8F8")
+    __uniConfig.globalStyle = _uM("navigationBarTextStyle" to "#fff", "navigationBarBackgroundColor" to "#0F0A4D", "backgroundColor" to "#0F0A4D")
     __uniConfig.getTabBarConfig = fun(): Map<String, Any>? {
-        return _uM("color" to "#7A7E83", "selectedColor" to "#3cc51f", "borderStyle" to "black", "backgroundColor" to "#ffffff", "list" to _uA(
+        return _uM("color" to "#fff", "selectedColor" to "#4CE2E1", "borderStyle" to "black", "backgroundColor" to "rgba(12, 9, 79, 1)", "list" to _uA(
             _uM("pagePath" to "pages/index/index", "iconPath" to "static/image/home.png", "selectedIconPath" to "static/image/home-sel.png", "text" to "首页"),
-            _uM("pagePath" to "pages/my/my", "iconPath" to "static/image/my.png", "selectedIconPath" to "static/image/my-se", "text" to "我的")
+            _uM("pagePath" to "pages/my/my", "iconPath" to "static/image/my.png", "selectedIconPath" to "static/image/my-sel.png", "text" to "我的")
         ))
     }
     __uniConfig.tabBar = __uniConfig.getTabBarConfig()

@@ -4,13 +4,13 @@
     "compiler_version": "5.03"
   },
   "files": {
+    "index.kt": {
+      "class": "",
+      "md5": "c1e15162627a3ee9ec96ba2e3d3fb9e60480ae5b"
+    },
     "pages/my/my.kt": {
       "class": "GenPagesMyMy",
       "md5": "bec24ac55e8124d41a2f3b7fc633b9eb1026eb01"
-    },
-    "index.kt": {
-      "md5": "91dfd94c4d97337570f53819ca8e2d4d3deddcab",
-      "class": ""
     },
     "pages/index/index.kt": {
       "md5": "6c24d33e7cf0b7bab6e97e0e99be7a0d84e2adb0",
