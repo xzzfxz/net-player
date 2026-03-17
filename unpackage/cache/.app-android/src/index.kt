@@ -178,13 +178,17 @@ val GenAppClass = CreateVueAppComponent(GenApp::class.java, fun(): VueComponentO
 }
 )
 val GenPagesIndexIndexClass = CreateVueComponent(GenPagesIndexIndex::class.java, fun(): VueComponentOptions {
-    return VueComponentOptions(type = "page", name = "", inheritAttrs = GenPagesIndexIndex.inheritAttrs, inject = GenPagesIndexIndex.inject, props = GenPagesIndexIndex.props, propsNeedCastKeys = GenPagesIndexIndex.propsNeedCastKeys, emits = GenPagesIndexIndex.emits, components = GenPagesIndexIndex.components, styles = GenPagesIndexIndex.styles, setup = fun(props: ComponentPublicInstance): Any? {
-        return GenPagesIndexIndex.setup(props as GenPagesIndexIndex)
-    }
-    )
+    return VueComponentOptions(type = "page", name = "", inheritAttrs = GenPagesIndexIndex.inheritAttrs, inject = GenPagesIndexIndex.inject, props = GenPagesIndexIndex.props, propsNeedCastKeys = GenPagesIndexIndex.propsNeedCastKeys, emits = GenPagesIndexIndex.emits, components = GenPagesIndexIndex.components, styles = GenPagesIndexIndex.styles)
 }
 , fun(instance, renderer): GenPagesIndexIndex {
     return GenPagesIndexIndex(instance, renderer)
+}
+)
+val GenPagesMyMyClass = CreateVueComponent(GenPagesMyMy::class.java, fun(): VueComponentOptions {
+    return VueComponentOptions(type = "page", name = "", inheritAttrs = GenPagesMyMy.inheritAttrs, inject = GenPagesMyMy.inject, props = GenPagesMyMy.props, propsNeedCastKeys = GenPagesMyMy.propsNeedCastKeys, emits = GenPagesMyMy.emits, components = GenPagesMyMy.components, styles = GenPagesMyMy.styles)
+}
+, fun(instance, renderer): GenPagesMyMy {
+    return GenPagesMyMy(instance, renderer)
 }
 )
 fun createApp(): UTSJSONObject {
@@ -205,14 +209,22 @@ open class UniAppConfig : io.dcloud.uniapp.appframe.AppConfig {
     constructor() : super() {}
 }
 fun definePageRoutes() {
-    __uniRoutes.push(UniPageRoute(path = "pages/index/index", component = GenPagesIndexIndexClass, meta = UniPageMeta(isQuit = true), style = _uM("navigationBarTitleText" to "uni-app x")))
+    __uniRoutes.push(UniPageRoute(path = "pages/index/index", component = GenPagesIndexIndexClass, meta = UniPageMeta(isQuit = true), style = _uM("navigationBarTitleText" to "首页")))
+    __uniRoutes.push(UniPageRoute(path = "pages/my/my", component = GenPagesMyMyClass, meta = UniPageMeta(isQuit = false), style = _uM("navigationBarTitleText" to "我的")))
 }
-val __uniLaunchPage: Map<String, Any?> = _uM("url" to "pages/index/index", "style" to _uM("navigationBarTitleText" to "uni-app x"))
+val __uniTabBar: Map<String, Any?>? = _uM("color" to "#7A7E83", "selectedColor" to "#3cc51f", "borderStyle" to "black", "backgroundColor" to "#ffffff", "list" to _uA(
+    _uM("pagePath" to "pages/index/index", "iconPath" to "static/image/home.png", "selectedIconPath" to "static/image/home-sel.png", "text" to "首页"),
+    _uM("pagePath" to "pages/my/my", "iconPath" to "static/image/my.png", "selectedIconPath" to "static/image/my-se", "text" to "我的")
+))
+val __uniLaunchPage: Map<String, Any?> = _uM("url" to "pages/index/index", "style" to _uM("navigationBarTitleText" to "首页"))
 fun defineAppConfig() {
     __uniConfig.entryPagePath = "/pages/index/index"
     __uniConfig.globalStyle = _uM("navigationBarTextStyle" to "black", "navigationBarTitleText" to "uni-app x", "navigationBarBackgroundColor" to "#F8F8F8", "backgroundColor" to "#F8F8F8")
     __uniConfig.getTabBarConfig = fun(): Map<String, Any>? {
-        return null
+        return _uM("color" to "#7A7E83", "selectedColor" to "#3cc51f", "borderStyle" to "black", "backgroundColor" to "#ffffff", "list" to _uA(
+            _uM("pagePath" to "pages/index/index", "iconPath" to "static/image/home.png", "selectedIconPath" to "static/image/home-sel.png", "text" to "首页"),
+            _uM("pagePath" to "pages/my/my", "iconPath" to "static/image/my.png", "selectedIconPath" to "static/image/my-se", "text" to "我的")
+        ))
     }
     __uniConfig.tabBar = __uniConfig.getTabBarConfig()
     __uniConfig.conditionUrl = ""

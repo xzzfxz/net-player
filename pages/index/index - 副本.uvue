@@ -1,0 +1,62 @@
+<template>
+	<view>
+		<image class="logo" src="/static/logo.png"></image>
+		<text class="title">{{title}}</text>
+		<button @click="start">媒体</button>
+		<button @click="testConnect">连接</button>
+	</view>
+</template>
+
+<script setup lang="uts">
+	const title = ref('Hello')
+	
+	// 这里的路径对应你创建时的插件名
+	import { startBluetoothListen, startConnectionListen } from "@/uni_modules/wslcwslc-headphoneListener";
+	
+	
+	const start = () => {
+	    startBluetoothListen();
+	};
+	const testConnect = () => {
+		startConnectionListen(() => {
+			console.log("监听到断开连接了")
+		})
+	}
+	
+
+	const test = () => {
+		console.log('test')
+		uni.request({
+			url: 'https://passportapi.115.com/open/refreshToken',
+			data: {
+				refresh_token: "sldkfjdslkfj"
+			},
+			header: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			method: 'POST',
+			success: ({ data, statusCode, header }) => {
+				console.log("success");
+			},
+			fail: (error) => {
+				console.log(error);
+			}
+		})
+	}
+</script>
+
+<style>
+	.logo {
+		height: 100px;
+		width: 100px;
+		margin: 100px auto 25px auto;
+	}
+
+	.title {
+		font-size: 18px;
+		color: #8f8f94;
+		text-align: center;
+	}
+</style>

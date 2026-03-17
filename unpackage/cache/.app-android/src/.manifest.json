@@ -4,13 +4,17 @@
     "compiler_version": "5.03"
   },
   "files": {
-    "pages/index/index.kt": {
-      "class": "GenPagesIndexIndex",
-      "md5": "ec4a5ecd3671f8ea78757bdb50dac894cc50d80e"
+    "pages/my/my.kt": {
+      "class": "GenPagesMyMy",
+      "md5": "bec24ac55e8124d41a2f3b7fc633b9eb1026eb01"
     },
     "index.kt": {
-      "class": "",
-      "md5": "ddaf072f3c3061739dc6b0bbdead9b7c7268e404"
+      "md5": "91dfd94c4d97337570f53819ca8e2d4d3deddcab",
+      "class": ""
+    },
+    "pages/index/index.kt": {
+      "md5": "6c24d33e7cf0b7bab6e97e0e99be7a0d84e2adb0",
+      "class": "GenPagesIndexIndex"
     }
   }
 }

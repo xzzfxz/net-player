@@ -21,15 +21,17 @@ export class UniAppConfig extends io.dcloud.uniapp.appframe.AppConfig {
     constructor() { super(); }
 }
 import GenPagesIndexIndexClass from './pages/index/index.uvue';
+import GenPagesMyMyClass from './pages/my/my.uvue';
 function definePageRoutes() {
-    __uniRoutes.push({ path: "pages/index/index", component: GenPagesIndexIndexClass, meta: { isQuit: true } as UniPageMeta, style: _uM([["navigationBarTitleText", "uni-app x"]]) } as UniPageRoute);
+    __uniRoutes.push({ path: "pages/index/index", component: GenPagesIndexIndexClass, meta: { isQuit: true } as UniPageMeta, style: _uM([["navigationBarTitleText", "首页"]]) } as UniPageRoute);
+    __uniRoutes.push({ path: "pages/my/my", component: GenPagesMyMyClass, meta: { isQuit: false } as UniPageMeta, style: _uM([["navigationBarTitleText", "我的"]]) } as UniPageRoute);
 }
-const __uniTabBar: Map<string, any | null> | null = null;
-const __uniLaunchPage: Map<string, any | null> = _uM([["url", "pages/index/index"], ["style", _uM([["navigationBarTitleText", "uni-app x"]])]]);
+const __uniTabBar: Map<string, any | null> | null = _uM([["color", "#7A7E83"], ["selectedColor", "#3cc51f"], ["borderStyle", "black"], ["backgroundColor", "#ffffff"], ["list", [_uM([["pagePath", "pages/index/index"], ["iconPath", "static/image/home.png"], ["selectedIconPath", "static/image/home-sel.png"], ["text", "首页"]]), _uM([["pagePath", "pages/my/my"], ["iconPath", "static/image/my.png"], ["selectedIconPath", "static/image/my-se"], ["text", "我的"]])]]]);
+const __uniLaunchPage: Map<string, any | null> = _uM([["url", "pages/index/index"], ["style", _uM([["navigationBarTitleText", "首页"]])]]);
 function defineAppConfig() {
     __uniConfig.entryPagePath = '/pages/index/index';
     __uniConfig.globalStyle = _uM([["navigationBarTextStyle", "black"], ["navigationBarTitleText", "uni-app x"], ["navigationBarBackgroundColor", "#F8F8F8"], ["backgroundColor", "#F8F8F8"]]);
-    __uniConfig.getTabBarConfig = (): Map<string, any> | null => null;
+    __uniConfig.getTabBarConfig = (): Map<string, any> | null => _uM([["color", "#7A7E83"], ["selectedColor", "#3cc51f"], ["borderStyle", "black"], ["backgroundColor", "#ffffff"], ["list", [_uM([["pagePath", "pages/index/index"], ["iconPath", "static/image/home.png"], ["selectedIconPath", "static/image/home-sel.png"], ["text", "首页"]]), _uM([["pagePath", "pages/my/my"], ["iconPath", "static/image/my.png"], ["selectedIconPath", "static/image/my-se"], ["text", "我的"]])]]]);
     __uniConfig.tabBar = __uniConfig.getTabBarConfig();
     __uniConfig.conditionUrl = '';
     __uniConfig.uniIdRouter = _uM();

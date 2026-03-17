@@ -12,35 +12,17 @@ import io.dcloud.uts.Map
 import io.dcloud.uts.Set
 import io.dcloud.uts.UTSAndroid
 import kotlin.properties.Delegates
-import uts.sdk.modules.wslcwslcHeadphoneListener.startBluetoothListen
-import uts.sdk.modules.wslcwslcHeadphoneListener.startConnectionListen
 open class GenPagesIndexIndex : BasePage {
     constructor(__ins: ComponentInternalInstance, __renderer: String?) : super(__ins, __renderer) {}
+    @Suppress("UNUSED_PARAMETER", "UNUSED_VARIABLE")
+    override fun `$render`(): Any? {
+        val _cache = this.`$`.renderCache
+        return _cE("view", null, _uA(
+            _cE("image", _uM("class" to "logo", "src" to "/static/logo.png")),
+            _cE("text", _uM("class" to "title"), "标题")
+        ))
+    }
     companion object {
-        @Suppress("UNUSED_PARAMETER", "UNUSED_VARIABLE")
-        var setup: (__props: GenPagesIndexIndex) -> Any? = fun(__props): Any? {
-            val __ins = getCurrentInstance()!!
-            val _ctx = __ins.proxy as GenPagesIndexIndex
-            val _cache = __ins.renderCache
-            val title = ref("Hello")
-            val start = fun(){
-                startBluetoothListen()
-            }
-            val testConnect = fun(){
-                startConnectionListen(fun(){
-                    console.log("监听到断开连接了", " at pages/index/index.uvue:22")
-                }
-                )
-            }
-            return fun(): Any? {
-                return _cE("view", null, _uA(
-                    _cE("image", _uM("class" to "logo", "src" to "/static/logo.png")),
-                    _cE("text", _uM("class" to "title"), _tD(unref(title)), 1),
-                    _cE("button", _uM("onClick" to start), "媒体"),
-                    _cE("button", _uM("onClick" to testConnect), "连接")
-                ))
-            }
-        }
         val styles: Map<String, Map<String, Map<String, Any>>> by lazy {
             _nCS(_uA(
                 styles0

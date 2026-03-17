@@ -3,12 +3,10 @@ import MediaSession from "android.media.session.MediaSession";
 import Context from "android.content.Context"
 import AudioManager from 'android.media.AudioManager';
 import AudioDeviceCallback from 'android.media.AudioDeviceCallback';
-import IntentFilter from "android.content.IntentFilter"
-import { MedialCallback, ConnectionReceiver, DeviceCallback } from "./receiver.uts"
+import { MedialCallback, DeviceCallback } from "./receiver.uts"
 import { IConnectionFunc } from "./interface.uts"
 
 let mSession : MediaSession | null = null;
-let connectionReceiver : ConnectionReceiver | null = null;
 let audioManager : AudioManager | null = null;
 let deviceCallback : AudioDeviceCallback | null = null;
 

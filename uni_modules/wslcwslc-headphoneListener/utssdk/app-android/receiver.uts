@@ -3,29 +3,10 @@ import Context from "android.content.Context"
 import Intent from "android.content.Intent";
 import KeyEvent from "android.view.KeyEvent";
 import MediaSession from "android.media.session.MediaSession";
-import AudioManager from 'android.media.AudioManager';
 import AudioDeviceCallback from 'android.media.AudioDeviceCallback';
 import AudioDeviceInfo from 'android.media.AudioDeviceInfo';
 
-import { IConnectionFunc } from "./interface.uts"
-
 // 连接状态
-export class ConnectionReceiver extends BroadcastReceiver {
-	private callback : IConnectionFunc
-	constructor(callback : IConnectionFunc) {
-		super();
-		this.callback = callback
-	}
-	// 重写onReceive事件
-	override onReceive(context : Context, intent : Intent) {
-		console.log("收到广播: " + intent.getAction());
-		if (intent.getAction() == AudioManager.ACTION_AUDIO_BECOMING_NOISY) {
-			// 蓝牙断开连接
-			console.log("蓝牙断开连接")
-			this.callback()
-		}
-	}
-}
 export class DeviceCallback extends AudioDeviceCallback {
 	constructor() {
 		super()
