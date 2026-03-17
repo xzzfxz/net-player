@@ -31,17 +31,17 @@ export class DeviceCallback extends AudioDeviceCallback {
 		super()
 	}
 	
-	override onAudioDevicesAdded(addedDevices: AudioDeviceInfo[] | null | undefined): void {
+	override onAudioDevicesAdded(addedDevices: kotlin.Array<AudioDeviceInfo>): void {
 		// 连接成功
 		console.log("蓝牙连接成功")
 		console.log(addedDevices)
 	}
 
-	// override onAudioDevicesRemoved(removedDevices :  AudioDeviceInfo[] | null | undefined) {
-	// 	// 断开连接
-	// 	console.log("断开连接")
-	// 	console.log(removedDevices)
-	// }
+	override onAudioDevicesRemoved(removedDevices :  kotlin.Array<AudioDeviceInfo>) {
+		// 断开连接
+		console.log("断开连接")
+		console.log(removedDevices)
+	}
 }
 
 // 媒体按键

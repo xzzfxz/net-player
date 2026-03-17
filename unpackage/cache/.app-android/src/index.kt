@@ -102,7 +102,7 @@ fun tryConnectSocket(host: String, port: String, id: String): UTSPromise<SocketT
 fun initRuntimeSocketService(): UTSPromise<Boolean> {
     val hosts: String = "198.18.0.1,192.168.178.17,127.0.0.1"
     val port: String = "8090"
-    val id: String = "app-android_35fX5y"
+    val id: String = "app-android_cQE9oN"
     if (hosts == "" || port == "" || id == "") {
         return UTSPromise.resolve(false)
     }
