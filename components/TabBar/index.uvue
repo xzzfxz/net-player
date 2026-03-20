@@ -1,0 +1,28 @@
+<script setup lang="uts">
+	import { Font_Info } from '@/const/font'
+	import TabBarItem from './TabBarItem.vue'
+	import type { ITabBarItem } from '@/types'
+
+	const tabList : ITabBarItem[] = [
+		{ id: "home", name: "首页", icon: Font_Info.home as string },
+		{ id: "my", name: "我的", icon: Font_Info.my as string }
+	]
+</script>
+
+<template>
+	<view class="tabbar-container">
+		<TabBarItem v-for="item in tabList" :key="item.id" :data="item"></TabBarItem>
+	</view>
+</template>
+
+<style scoped lang="scss">
+	.tabbar-container {
+		height: 50px;
+    padding: 0 10px;
+		border: 1px solid green;
+		background-color: $navBgColor;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+	}
+</style>

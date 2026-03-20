@@ -1,0 +1,77 @@
+<script lang="uts" setup>
+	const props = defineProps({
+		title: {
+			type: String,
+			default: ''
+		},
+		showLeft: {
+			type: Boolean,
+			default: false
+		},
+		showRight: {
+			type: Boolean,
+			default: false
+		}
+	})
+</script>
+
+<template>
+	<view class="navigation-container">
+		<view class="status-bar"></view>
+		<view class="navigation-bar">
+			<view class="back-container flex-center">
+				<button class="back-btn" hover-class="back-btn-hover" v-if="props.showLeft">
+					<slot name="left">
+						<uni-icons color="#fff" type="left" size="30"></uni-icons>
+					</slot>
+				</button>
+			</view>
+			<text class="title">{{ props.title }}</text>
+			<view class="back-container flex-center">
+				<button class="back-btn" hover-class="back-btn-hover" v-if="props.showRight">
+					<slot name="right">
+						<uni-icons color="#fff" type="right" size="30"></uni-icons>
+					</slot>
+				</button>
+			</view>
+		</view>
+	</view>
+</template>
+
+<style scoped lang="scss">
+	.navigation-container {
+		background-color: $navBgColor;
+
+		.status-bar {
+			height: var(--status-bar-height);
+		}
+	}
+
+	.back-btn-hover {
+		background-color: rgba(255, 255, 255, 0.4);
+	}
+
+	.navigation-bar {
+		height: 44px;
+		padding: 0 10px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+
+		.back-container {
+			width: 40px;
+			height: 40px;
+		}
+
+		.back-btn {
+			background-color: transparent;
+		}
+
+		.title {
+			flex: 1;
+			text-align: center;
+			color: $navTextColor;
+		}
+	}
+</style>

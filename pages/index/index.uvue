@@ -1,24 +1,30 @@
+<script setup lang="uts">
+	import NavigationBar from '@/components/NavigationBar/index.uvue'
+	import TabBar from '@/components/TabBar/index.uvue'
+</script>
+
 <template>
-	<view>
-		<image class="logo" src="/static/logo.png"></image>
-		<text class="title">标题</text>
+	<view class="index-container">
+		<view class="index-content-container">
+			<NavigationBar showRight title="首页">
+				<template #right>
+					<uni-icons color="#fff" type="plusempty" size="30"></uni-icons>
+				</template>
+			</NavigationBar>
+		</view>
+		<TabBar></TabBar>
 	</view>
 </template>
 
-<script setup lang="uts">
+<style lang="scss" scoped>
+	.index-container {
+		height: 100%;
+		display: flex;
+		flex-direction: column;
 
-</script>
-
-<style>
-	.logo {
-		height: 100px;
-		width: 100px;
-		margin: 100px auto 25px auto;
-	}
-
-	.title {
-		font-size: 18px;
-		color: #8f8f94;
-		text-align: center;
+		.index-content-container {
+			flex-grow: 1;
+			border: 1px solid blue;
+		}
 	}
 </style>

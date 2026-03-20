@@ -5,6 +5,17 @@
 	export default {
 		onLaunch() {
 			console.log('App Launch')
+			uni.loadFontFace({
+				family: "my-icon",
+				source: 'url("/static/font/iconfont.ttf")',
+				global: true,
+				success() {
+					console.log('字体加载成功')
+				},
+				fail(err) {
+					console.log('loadFontFace fail', err)
+				}
+			})
 		},
 		onShow() {
 			console.log('App Show')
@@ -36,13 +47,6 @@
 	}
 </script>
 
-<style>
-	/*每个页面公共css */
-	.uni-row {
-		flex-direction: row;
-	}
-
-	.uni-column {
-		flex-direction: column;
-	}
+<style lang="scss">
+	@use "@/styles/global.scss";
 </style>
