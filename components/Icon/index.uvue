@@ -3,12 +3,24 @@
 		name: {
 			type: String,
 			default: ''
+		},
+		className: {
+			type: String,
+			default: ''
 		}
 	})
 </script>
 
 <template>
-	<text class="my-icon">{{ props.name }}</text>
+	<text class="my-icon" :class="props.className">{{ props.name }}</text>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+	.my-icon {
+		color: #fff !important;
+
+		&.selected {
+			color: $tabBarSelectColor !important;
+		}
+	}
+</style>

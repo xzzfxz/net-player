@@ -49,4 +49,9 @@
 
 <style lang="scss">
 	@use "@/styles/global.scss";
+	.safe-area-bottom {
+    /* 使用内置 CSS 变量获取底部安全区高度 */
+    padding-bottom: constant(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 </style>

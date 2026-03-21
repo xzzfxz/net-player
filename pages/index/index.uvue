@@ -1,12 +1,36 @@
 <script setup lang="uts">
 	import NavigationBar from '@/components/NavigationBar/index.uvue'
 	import TabBar from '@/components/TabBar/index.uvue'
+	import {mainStore, handleAddGroup} from "@/store"
+	import {showToast} from "@/utils"
+
+	// 显示添加分组弹窗
+	const handleRightClick = () => {
+		uni.showModal({
+			title: "添加分组",
+			editable: true,
+			placeholderText: "请输入分组名称",
+			success: (res) => {
+				if (res.confirm) {
+					if (res.content == null) {
+						return;
+					}
+					const preGroup = mainStore.groupList.find(item => item.name == res.content);
+					if (preGroup != null) {
+						showToast("分组已存在", null)
+					} else {
+						handleAddGroup(res.content)
+					}
+				}
+			}
+		})
+	}
 </script>
 
 <template>
 	<view class="index-container">
 		<view class="index-content-container">
-			<NavigationBar showRight title="首页">
+			<NavigationBar showRight title="首页" @rightClick="handleRightClick">
 				<template #right>
 					<uni-icons color="#fff" type="plusempty" size="30"></uni-icons>
 				</template>
@@ -23,8 +47,8 @@
 		flex-direction: column;
 
 		.index-content-container {
+			height: 0;
 			flex-grow: 1;
-			border: 1px solid blue;
 		}
 	}
 </style>

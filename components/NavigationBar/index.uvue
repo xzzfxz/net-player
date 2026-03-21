@@ -1,4 +1,6 @@
 <script lang="uts" setup>
+	const emit = defineEmits(["rightClick"])
+
 	const props = defineProps({
 		title: {
 			type: String,
@@ -13,6 +15,10 @@
 			default: false
 		}
 	})
+
+	const handleRightClick = () => {
+		emit("rightClick")
+	}
 </script>
 
 <template>
@@ -28,7 +34,7 @@
 			</view>
 			<text class="title">{{ props.title }}</text>
 			<view class="back-container flex-center">
-				<button class="back-btn" hover-class="back-btn-hover" v-if="props.showRight">
+				<button class="back-btn" hover-class="back-btn-hover" v-if="props.showRight" @click="handleRightClick">
 					<slot name="right">
 						<uni-icons color="#fff" type="right" size="30"></uni-icons>
 					</slot>

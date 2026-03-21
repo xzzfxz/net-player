@@ -1,0 +1,18 @@
+import { reactive } from "vue"
+import type { IMainStore } from "@/types/store.uts"
+import type { IGroupItem } from "../types"
+
+export const mainStore = reactive<IMainStore>({
+	// 当前tabbar
+	currentTab: "home",
+	// 分组列表
+	groupList: []
+})
+
+export const handleAddGroup = (name : string) => {
+	mainStore.groupList.push({
+		name,
+		id: "",
+		path: ""
+	} as IGroupItem)
+}

@@ -1,7 +1,13 @@
-
 // 底部导航栏
 export type ITabBarItem = {
-  id: string,
-  name: string,
-  icon: string,
+	id : string,
+	name : string,
+	icon : string,
+}
+
+// 分组
+export type IGroupItem = {
+	name : string,
+	id ?: string,
+	path ?: string
 }

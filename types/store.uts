@@ -1,0 +1,7 @@
+import type { IGroupItem } from "./index"
+
+// 主mainStore
+export type IMainStore = {
+  currentTab: string,
+  groupList: IGroupItem[]
+}

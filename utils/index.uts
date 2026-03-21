@@ -1,0 +1,15 @@
+// toast
+export const showToast = (title: string, icon?: "success" | "error" | "warning" | "info") => {
+  if (icon == null) {
+    icon = "none"
+  }
+	uni.showToast({
+		title,
+		icon: icon,
+    position: "top",
+    duration: 2000,
+    fail: (err) => {
+      console.log("弹窗失败", err)
+    },
+	})
+}
