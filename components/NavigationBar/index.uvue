@@ -1,5 +1,5 @@
 <script lang="uts" setup>
-	const emit = defineEmits(["rightClick"])
+	const emit = defineEmits(["leftClick", "rightClick"])
 
 	const props = defineProps({
 		title: {
@@ -16,6 +16,12 @@
 		}
 	})
 
+	// 左边点击
+	const handleLeftClick = () => {
+		emit("leftClick")
+	}
+
+	// 右边点击
 	const handleRightClick = () => {
 		emit("rightClick")
 	}
@@ -26,7 +32,7 @@
 		<view class="status-bar"></view>
 		<view class="navigation-bar">
 			<view class="back-container flex-center">
-				<button class="back-btn" hover-class="back-btn-hover" v-if="props.showLeft">
+				<button class="back-btn" hover-class="back-btn-hover" v-if="props.showLeft" @click="handleLeftClick">
 					<slot name="left">
 						<uni-icons color="#fff" type="left" size="30"></uni-icons>
 					</slot>

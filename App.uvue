@@ -1,4 +1,5 @@
 <script lang="uts">
+	import { mainStore } from "@/store"
 	// #ifdef APP-ANDROID || APP-HARMONY
 	let firstBackTime = 0
 	// #endif
@@ -26,6 +27,10 @@
 		// #ifdef APP-ANDROID || APP-HARMONY
 		onLastPageBackPress() {
 			console.log('App LastPageBackPress')
+			console.log(mainStore.currentTab)
+			if (mainStore.currentTab != "home") {
+				return;
+			}
 			if (firstBackTime == 0) {
 				uni.showToast({
 					title: '再按一次退出应用',

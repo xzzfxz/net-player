@@ -1,14 +1,27 @@
-import { reactive } from "vue"
 import type { IMainStore } from "@/types/store.uts"
 import type { IGroupItem } from "../types"
+import { setStorage, getStorage } from "@/utils/storage"
 
-export const mainStore = reactive<IMainStore>({
-	// 当前tabbar
-	currentTab: "home",
-	// 分组列表
-	groupList: [{name: "分组", path: "/musice", id: ""}]
-})
+const getInitialState = (): IMainStore => {
+	const storedData = getStorage("mainStore");
+	const initData: IMainStore = {
+		// 当前tabbar
+		currentTab: "home",
+		// 分组列表
+		groupList: [{ name: "分组", path: "/musice", id: "" }]
+	}
+	if (storedData == null) {
+		return initData
+	}
+	const res = JSON.parseObject<IMainStore>(storedData as string)
+	if (res != null) {
+		return res
+	}
+	return initData
+}
+export const mainStore = reactive<IMainStore>(getInitialState())
 
+// 添加分组
 export const handleAddGroup = (name : string) => {
 	mainStore.groupList.push({
 		name,
@@ -16,3 +29,12 @@ export const handleAddGroup = (name : string) => {
 		path: ""
 	} as IGroupItem)
 }
+// 删除分组
+export const handleDeleteGroup = (name: string) => {
+	mainStore.groupList = mainStore.groupList.filter(item => item.name != name)
+}
+
+watch(mainStore, () => {
+	const str = JSON.stringify(mainStore)
+	setStorage("mainStore", str)
+}, { deep: true })

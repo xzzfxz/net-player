@@ -1,0 +1,9 @@
+// 设置本地缓存
+export const setStorage = (key: string, value: any) => {
+  uni.setStorageSync(key, value)
+}
+
+// 获取本地缓存
+export const getStorage = (key: string): any | null => {
+	return uni.getStorageSync(key)
+}

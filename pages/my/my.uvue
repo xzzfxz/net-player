@@ -1,17 +1,40 @@
-<template>
-	<!-- #ifdef APP -->
-	<scroll-view style="flex:1">
-	<!-- #endif -->
-		
-	<!-- #ifdef APP -->
-	</scroll-view>
-	<!-- #endif -->
-</template>
+<script setup lang="uts">
+		import NavigationBar from '@/components/NavigationBar/index.uvue'
+		import { generateRandomCode } from '@/utils'
+		import { openSchema } from '@/uni_modules/uts-openSchema'
 
-<script setup>
-		
+		// 登录
+		const handleLogin = () => {
+			const code = generateRandomCode();
+  		const clientId = '100197839';
+  		const redirectUri = encodeURIComponent('https://staticweb.lichongukh.workers.dev/html/netPlayer');
+  		const openUrlStr = `https://passportapi.115.com/open/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&state=${code}`;
+  		openSchema(openUrlStr);
+		}
 </script>
 
-<style>
-		
+<template>
+	<view class="my-container">
+		<NavigationBar title="我的">
+		</NavigationBar>
+		<view class="login-container">
+			<button class="login-btn" @click="handleLogin">登录</button>
+			<button class="login-btn">刷新登录状态</button>
+		</view>
+	</view>
+</template>
+
+<style lang="scss" scoped>
+		.my-container {
+			height: 100%;
+		}
+		.login-container {
+			padding: 10px;
+			.login-btn {
+				margin-bottom: 10px;
+				border: 1px solid $borderColor;
+				background-color: transparent;
+				color: $navTextColor;
+			}
+		}
 </style>

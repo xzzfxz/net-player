@@ -7,11 +7,12 @@
 	// 返回
 	const handleBack = () => {
 		console.log('返回');
+		uni.navigateBack()
 	}
 
 	// 选择路径
 	const handleChagePath = () => {
-		console.log('刷新');
+		console.log('选择路径');
 	}
 
 	// 清除过滤
