@@ -7,3 +7,9 @@
 .my-icon {
   font-family: my-icon;
 }
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

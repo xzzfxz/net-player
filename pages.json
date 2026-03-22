@@ -1,17 +1,17 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://doc.dcloud.net.cn/uni-app-x/collocation/pagesjson.html
 		{
+			"path": "pages/playList/playList",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "播放列表"
+			}
+		},
+		{
 			"path": "pages/index/index",
 			"style": {
 				"navigationStyle": "custom",
 				"navigationBarTitleText": "首页"
-			}
-		},
-		{
-			"path": "pages/my/my",
-			"style": {
-				// "navigationStyle": "custom",
-				"navigationBarTitleText": "我的"
 			}
 		}
 	],
@@ -19,7 +19,7 @@
 		"color": "#fff",
 		"selectedColor": "#4CE2E1",
 		"borderStyle": "black",
-		"backgroundColor": "rgba(12, 9, 79, 1)",
+		"backgroundColor": "rgba(12, 9, 79, 1)"
 		// "list": [
 		// 	{
 		// 		"pagePath": "pages/index/index",

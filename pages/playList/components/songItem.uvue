@@ -1,0 +1,79 @@
+<script setup lang="uts">
+	const rightOptions = [{ text: "删除" }]
+
+	// 删除
+	const handleDelete = () => {
+
+	}
+</script>
+
+<template>
+	<l-swipe-cell>
+		<view class="song-container">
+			<view class="num-container flex-center">
+				<text class="num">2000</text>
+			</view>
+			<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png"></image>
+			<view class="song-info">
+				<text class="song-name ellipsis">歌曲名称歌曲名称歌曲名称歌曲名称</text>
+				<text class="song-artist ellipsis">歌手</text>
+			</view>
+		</view>
+		<template #right>
+			<view class="right-container flex-center" @click="handleDelete"><text class="delete-text">删除</text></view>
+		</template>
+	</l-swipe-cell>
+</template>
+
+<style lang="scss" scoped>
+	.song-container {
+		height: 48px;
+		border: 1px solid $borderColor;
+		border-radius: 4px;
+		display: flex;
+		align-items: center;
+		;
+		flex-direction: row;
+	}
+
+	.num-container {
+		width: 40px;
+
+		.num {
+			font-size: 12px;
+			color: #eee;
+			font-style: italic;
+		}
+	}
+
+	.cover {
+		width: 40px;
+		height: 40px;
+		margin-left: 4px;
+	}
+
+	.song-info {
+		width: 0;
+		margin-left: 4px;
+		flex-grow: 1;
+
+		.song-name {
+			color: #fff;
+			font-weight: 400;
+		}
+
+		.song-artist {
+			font-size: 12px;
+			color: #aaa;
+		}
+	}
+
+	.right-container {
+		width: 60px;
+		background-color: $dangerColor;
+
+		.delete-text {
+			color: #fff;
+		}
+	}
+</style>

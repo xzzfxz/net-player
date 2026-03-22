@@ -1,0 +1,89 @@
+<script setup lang="uts">
+	import NavigationBar from '@/components/NavigationBar/index.uvue'
+	import SongItem from "./components/songItem.uvue"
+
+	const filterValue = ref("")
+
+	// 返回
+	const handleBack = () => {
+		console.log('返回');
+	}
+
+	// 选择路径
+	const handleChagePath = () => {
+		console.log('刷新');
+	}
+
+	// 清除过滤
+	const handleClearFilter = () => {
+		filterValue.value = ""
+	}
+</script>
+
+<template>
+	<view class="play-container safe-area-bottom">
+		<NavigationBar showLeft showRight title="首页" @leftClick="handleBack" @rightClick="handleChagePath">
+			<template #right>
+				<uni-icons color="#fff" type="folder-add" size="30"></uni-icons>
+			</template>
+		</NavigationBar>
+		<view class="filter-container">
+			<input v-model="filterValue" class="filter-input" placeholder="请输入歌名或歌手"></input>
+			<uni-icons v-if="filterValue" class="filter-icon" color="#ccc" type="close" size="30"
+				@click="handleClearFilter"></uni-icons>
+		</view>
+		<text class="count-text">共40首</text>
+		<list-view class="list-container" refresher-enabled="true">
+			<list-item class="list-item" v-for="item in 5">
+				<SongItem />
+			</list-item>
+		</list-view>
+	</view>
+</template>
+
+<style scoped lang="scss">
+	.play-container {
+		height: 100%;
+		background-color: $bodyBgColor;
+		display: flex;
+		;
+	}
+
+	.filter-container {
+		padding: 4px 10px;
+		flex-shrink: 0;
+		position: relative;
+		;
+
+		.filter-input {
+			height: 32px;
+			padding: 0 4px;
+			border: 1px solid $borderColor;
+			border-radius: 4px;
+			color: #fff;
+		}
+
+		.filter-icon {
+			position: absolute;
+			right: 14px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+	}
+
+	.count-text {
+		padding: 4px 10px;
+		color: #ccc;
+		font-size: 12px;
+	}
+
+	.list-container {
+		height: 0;
+		padding: 0 10px;
+		flex-grow: 1;
+
+		.list-item {
+			margin-bottom: 4px;
+		}
+	}
+</style>

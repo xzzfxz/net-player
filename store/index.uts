@@ -6,7 +6,7 @@ export const mainStore = reactive<IMainStore>({
 	// 当前tabbar
 	currentTab: "home",
 	// 分组列表
-	groupList: []
+	groupList: [{name: "分组", path: "/musice", id: ""}]
 })
 
 export const handleAddGroup = (name : string) => {

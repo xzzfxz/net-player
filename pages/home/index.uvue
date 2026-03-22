@@ -1,0 +1,43 @@
+<script setup lang="uts">
+	import { IGroupItem } from '../../types';
+	import { mainStore } from '@/store'
+
+	// 跳转到列表页
+	const handleToGroupDetail = (group : IGroupItem) => { }
+</script>
+
+<template>
+	<scroll-view class="home-container">
+		<view class="group-item" v-for="item in mainStore.groupList" :key="item.name"
+			@click="handleToGroupDetail(item)">
+			<text class="group-name">{{ item.name }}</text>
+			<text class="group-path">{{ item.path }}</text>
+		</view>
+	</scroll-view>
+</template>
+
+<style scoped lang="scss">
+	.home-container {
+		flex: 1;
+		padding: 8px 10px 0;
+	}
+
+	.group-item {
+		height: 48px;
+		margin-bottom: 8px;
+		padding: 2px 10px;
+		border: 1px solid $borderColor;
+		border-radius: 8px;
+		justify-content: center;
+
+		.group-name {
+			color: $navTextColor;
+			font-weight: 400;
+		}
+
+		.group-path {
+			color: #aaa;
+			font-size: 12px;
+		}
+	}
+</style>
