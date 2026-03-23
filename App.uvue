@@ -32,6 +32,7 @@
 			console.log('App LastPageBackPress')
 			console.log(mainStore.currentTab)
 			if (mainStore.currentTab != "home") {
+				mainStore.currentTab = "home"
 				return;
 			}
 			if (firstBackTime == 0) {
