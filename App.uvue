@@ -1,5 +1,7 @@
 <script lang="uts">
+	import {handleAppLaunchParams} from "@/utils"
 	import { mainStore } from "@/store"
+
 	// #ifdef APP-ANDROID || APP-HARMONY
 	let firstBackTime = 0
 	// #endif
@@ -18,8 +20,9 @@
 				}
 			})
 		},
-		onShow() {
+		onShow(options) {
 			console.log('App Show')
+			handleAppLaunchParams(options)
 		},
 		onHide() {
 			console.log('App Hide')

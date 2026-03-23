@@ -1,6 +1,8 @@
 import type { IMainStore } from "@/types/store.uts"
 import type { IGroupItem } from "../types"
+import type { ITokenResponse } from "@/types/response.uts"
 import { setStorage, getStorage } from "@/utils/storage"
+import {dayjs} from "@/uni_modules/kux-dayjs"
 
 const getInitialState = (): IMainStore => {
 	const storedData = getStorage("mainStore");
@@ -8,14 +10,19 @@ const getInitialState = (): IMainStore => {
 		// 当前tabbar
 		currentTab: "home",
 		// 分组列表
-		groupList: [{ name: "分组", path: "/musice", id: "" }]
+		groupList: [{ name: "分组", path: "/musice", id: "" }],
+		// token
+		redirectUri: "",
+		accessToken: "",
+		refreshToken: "",
+		expiresIn: 0,
 	}
 	if (storedData == null) {
 		return initData
 	}
 	const res = JSON.parseObject<IMainStore>(storedData as string)
 	if (res != null) {
-		return res
+		return { ...initData, ...res}
 	}
 	return initData
 }
@@ -32,6 +39,19 @@ export const handleAddGroup = (name : string) => {
 // 删除分组
 export const handleDeleteGroup = (name: string) => {
 	mainStore.groupList = mainStore.groupList.filter(item => item.name != name)
+}
+
+// 设置重定向url
+export const setRedirectUri = (url: string) => {
+	mainStore.redirectUri = url
+}
+
+// 设置token和过期时间
+export const setTokenInfo = (info: UTSJSONObject) => {
+	mainStore.accessToken = info["access_token"] as string
+	mainStore.refreshToken = info["refresh_token"] as string
+	const timestamp = dayjs().unix();
+	mainStore.expiresIn = timestamp + (info["expires_in"] as number)
 }
 
 watch(mainStore, () => {

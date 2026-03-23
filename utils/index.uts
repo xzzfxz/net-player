@@ -1,16 +1,20 @@
+import { fetchTokenByCode, postRefreshToken } from "@/api";
+import { mainStore, setTokenInfo } from "@/store";
+import {dayjs} from "@/uni_modules/kux-dayjs"
+
 // toast
-export const showToast = (title: string, icon?: "success" | "error" | "warning" | "info") => {
-  if (icon == null) {
-    icon = "none"
-  }
+export const showToast = (title : string, icon ?: "success" | "error" | "warning" | "info") => {
+	if (icon == null) {
+		icon = "none"
+	}
 	uni.showToast({
 		title,
 		icon: icon,
-    position: "top",
-    duration: 2000,
-    fail: (err) => {
-      console.log("弹窗失败", err)
-    },
+		position: "top",
+		duration: 2000,
+		fail: (err) => {
+			console.log("弹窗失败", err)
+		},
 	})
 }
 
@@ -19,11 +23,61 @@ export const showToast = (title: string, icon?: "success" | "error" | "warning" 
  * @return {*}
  */
 export const generateRandomCode = () => {
-  const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < 6; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length);
-    result += charset.charAt(randomIndex);
+	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	let result = "";
+	for (let i = 0; i < 6; i++) {
+		const randomIndex = Math.floor(Math.random() * charset.length);
+		result += charset.charAt(randomIndex);
+	}
+	return result;
+};
+
+// 获取url中的参数
+const handleGetParams = (url : string) => {
+	const searchUrl = url.split('?')[1];
+	const paramsArr = searchUrl.split("&");
+	const lastParams = {}
+	for (const item of paramsArr) {
+		const [key, value] = item.split("=");
+		lastParams[key] = value;
+	}
+	return lastParams
+}
+
+// 处理打开app时的参数
+export const handleAppLaunchParams = async (options : OnShowOptions) => {
+	const url = options.appScheme;
+	if (url == null) {
+		return;
+	}
+	const paramsObj = handleGetParams(url)
+	const code = paramsObj["code"]!
+	try {
+		const res = await fetchTokenByCode({
+			code,
+			redirect_uri: mainStore.redirectUri,
+		})
+		setTokenInfo(res)
+	} catch (err) {
+		console.log("发生了错误", err)
+	}
+}
+
+// 刷新token
+/**
+ * @description: 获取refreshToken
+ * @return {*}
+ */
+export const getRefreshToken = async (force: boolean) => {
+  if (!force) {
+    if (mainStore.refreshToken == "" || mainStore.expiresIn > dayjs().unix()) {
+      return;
+    }
   }
-  return result;
+  try {
+    const res = await postRefreshToken(mainStore.refreshToken)
+    setTokenInfo(res)
+  } catch (err) {
+    console.log("刷新token错误：", err)
+  }
 };

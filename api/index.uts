@@ -1,0 +1,19 @@
+import { request } from "./api";
+import type { ITokenResponse } from "@/types/response.uts";
+
+// 根据code获取token
+export const fetchTokenByCode = (data: UTSJSONObject) => {
+	return request.post<UTSJSONObject>("https://passportapi.115.com/open/authCodeToToken", {
+		"client_id": "100197839",
+		"client_secret": "0fb04eaa1778ffaf30a9c2c9dd1a8b7ac3ec87f602e893835766515409d7b8b5",
+		"grant_type": "authorization_code",
+		...data
+	})
+}
+
+// 刷新token
+export const postRefreshToken = (refreshToken: string) => {
+	return request.post<UTSJSONObject>("https://passportapi.115.com/open/refreshToken", {
+		refresh_token: refreshToken,
+	})
+}

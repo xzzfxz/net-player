@@ -44,21 +44,15 @@
 		"distribute": {
 			"modules": {},
 			"icons": {
-				"hdpi": "C:/lichong/practice/net-player/static/icon.png",
-				"xhdpi": "C:/lichong/practice/net-player/static/icon96.png",
-				"xxhdpi": "C:/lichong/practice/net-player/static/icon144.png",
-				"xxxhdpi": "C:/lichong/practice/net-player/static/icon192.png"
+				"hdpi": "",
+				"xhdpi": "",
+				"xxhdpi": "",
+				"xxxhdpi": ""
 			},
 			"splashScreens": {
 				"default": {}
 			},
-			"permissions": [
-				"<receiver android:name=\"io.dcloud.feature.internal.reflect.BroadcastReceiver\" android:exported=\"true\">",
-				"    <intent-filter android:priority=\"1000\">",
-				"        <action android:name=\"android.intent.action.MEDIA_BUTTON\" />",
-				"    </intent-filter>",
-				"</receiver>"
-			],
+			"permissions": [],
 			"schemes": "netplayer"
 		}
 	},

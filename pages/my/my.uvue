@@ -2,14 +2,22 @@
 		import NavigationBar from '@/components/NavigationBar/index.uvue'
 		import { generateRandomCode } from '@/utils'
 		import { openSchema } from '@/uni_modules/uts-openSchema'
+		import { mainStore, setRedirectUri } from '@/store'
+		import { getRefreshToken } from '@/utils'
 
 		// 登录
 		const handleLogin = () => {
-			const code = generateRandomCode();
+			const state = generateRandomCode();
   		const clientId = '100197839';
-  		const redirectUri = encodeURIComponent('https://staticweb.lichongukh.workers.dev/html/netPlayer');
-  		const openUrlStr = `https://passportapi.115.com/open/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&state=${code}`;
+  		const redirectUri = encodeURIComponent('https://staticweb.lichongukh.workers.dev/html/netPlayer') as string;
+			setRedirectUri(redirectUri)
+  		const openUrlStr = `https://passportapi.115.com/open/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&state=${state}`;
   		openSchema(openUrlStr);
+		}
+
+		// 刷新token
+		const handleRefreshToken = async () => {
+			await getRefreshToken(true)
 		}
 </script>
 
@@ -18,8 +26,10 @@
 		<NavigationBar title="我的">
 		</NavigationBar>
 		<view class="login-container">
-			<button class="login-btn" @click="handleLogin">登录</button>
-			<button class="login-btn">刷新登录状态</button>
+			<button class="login-btn" @click="handleLogin">登录
+				<text class="login-status" v-if="mainStore.accessToken">(已登录)</text>
+			</button>
+			<button class="login-btn" @click="handleRefreshToken">刷新登录状态</button>
 		</view>
 	</view>
 </template>
@@ -35,6 +45,9 @@
 				border: 1px solid $borderColor;
 				background-color: transparent;
 				color: $navTextColor;
+			}
+			.login-status {
+				color: #00c165;
 			}
 		}
 </style>

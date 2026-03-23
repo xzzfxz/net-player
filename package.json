@@ -1,1 +1,19 @@
-{}
+{
+  "name": "net-player",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xzzfxz/net-player.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xzzfxz/net-player/issues"
+  },
+  "homepage": "https://github.com/xzzfxz/net-player#readme",
+  "description": ""
+}
