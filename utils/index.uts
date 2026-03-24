@@ -1,6 +1,7 @@
-import { fetchTokenByCode, postRefreshToken } from "@/api";
+import { fetchTokenByCode, postRefreshToken, fetchFolders } from "@/api";
 import { mainStore, setTokenInfo } from "@/store";
 import {dayjs} from "@/uni_modules/kux-dayjs"
+import type { IDirTree } from "@/types";
 
 // toast
 export const showToast = (title : string, icon ?: "success" | "error" | "warning" | "info") => {
@@ -80,4 +81,26 @@ export const getRefreshToken = async (force: boolean) => {
   } catch (err) {
     console.log("刷新token错误：", err)
   }
+};
+
+/**
+ * @description: 获取文件(夹)信息
+ * @param {string} cid
+ * @param {number} showDir
+ * @return {*}
+ */
+export const getFolderInfo = async (cid: string, showDir: number): Promise<IDirTree[]> => {
+	try {
+		const arr = await fetchFolders({ cid, show_dir: showDir });
+		return arr.map(item => ({
+  	  fid: (item["fid"] as string) + '',
+  	  fn: item["fn"] as string,
+  	  pid: (item["pid"] as string) + '',
+  	  fc: item["fc"] as string,
+  	  children: []
+  	} as IDirTree));
+	} catch (err) {
+		console.log("获取文件夹信息失败", err)
+		return []
+	}
 };

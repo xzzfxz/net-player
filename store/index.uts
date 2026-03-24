@@ -40,6 +40,15 @@ export const handleAddGroup = (name : string) => {
 export const handleDeleteGroup = (name: string) => {
 	mainStore.groupList = mainStore.groupList.filter(item => item.name != name)
 }
+// 修改分组
+export const handleUpdateGroupInfo = (groupInfo: IGroupItem) => {
+	mainStore.groupList = mainStore.groupList.map(item => {
+		if (item.name == groupInfo.name) {
+			return groupInfo
+		}
+		return item
+	})
+}
 
 // 设置重定向url
 export const setRedirectUri = (url: string) => {

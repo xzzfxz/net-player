@@ -17,3 +17,8 @@ export const postRefreshToken = (refreshToken: string) => {
 		refresh_token: refreshToken,
 	})
 }
+
+// 获取文件夹列表
+export const fetchFolders = (params: UTSJSONObject) => {
+	return request.get<UTSArray<UTSJSONObject>>("https://proapi.115.com/open/ufile/files", params)
+}

@@ -1,64 +1,150 @@
 <script setup lang="uts">
-  const emit = defineEmits(['close'])
+	import type { IDirTree, IPathStack } from '@/types'
+	import { getFolderInfo } from '@/utils';
 
-  const showDialog = ref(true)
+	const emit = defineEmits(['close', 'sure'])
 
-  // 关闭
-  const handleCancel = () => {
-    emit('close')
-  }
+	const showDialog = ref(true)
+	const dirTreeList = ref<IDirTree[]>([]);
+	const currentPid = ref<IPathStack[]>([{ fid: '0', name: '.' }]);
+
+	// 递归获取当前目录列表
+	function getCurrentDirList(pid : string, dirList : IDirTree[]) {
+		for (const item of dirList) {
+			if (item.pid == pid) {
+				return dirList;
+			} else {
+				if (item.children.length > 0) {
+					// 递归获取当前目录列表
+					const list : IDirTree[] = getCurrentDirList(pid, item.children);
+					if (list.length > 0) {
+						return list;
+					}
+				}
+			}
+		}
+		return [];
+	};
+
+	// 当前选中的目录
+	const currentDirList = computed(() => {
+		const currentTree = currentPid.value[currentPid.value.length - 1];
+		const pid = currentTree.fid;
+		const list = getCurrentDirList(pid, dirTreeList.value);
+		return list;
+	});
+
+	// 选中目录
+	const handleSelectDir = async (currentDir : IDirTree) => {
+		if (currentDir.fc == '1') {
+			// 是文件
+			return;
+		}
+		if (currentDir.children.length > 0) {
+			// 已经请求过，直接返回
+			currentPid.value.push({ fid: currentDir.fid, name: currentDir.fn } as IPathStack);
+			return;
+		}
+		const res = await getFolderInfo(currentDir.fid, 1);
+    if (res != null) {
+      currentDir.children = res;
+    } else {
+      currentDir.children = []
+    }
+		currentPid.value.push({ fid: currentDir.fid, name: currentDir.fn } as IPathStack);
+	};
+
+	// 回到上一级
+	const handleBack = () => {
+		currentPid.value.pop();
+	};
+
+	// 确认
+	const handleSure = () => {
+		emit('sure', currentPid.value);
+	};
+
+	// 关闭
+	const handleCancel = () => {
+		emit('close')
+	}
+
+	// 初始化数据
+	const initData = async () => {
+		const root = await getFolderInfo('0', 1);
+		if (root != null) {
+			dirTreeList.value = root;
+		}
+	};
+	initData();
 </script>
 
 <template>
 	<page-container :show="showDialog" position="center" :round="true" style="borderRadius: 10px;">
-    <text class="dialog-title">选择路径</text>
+		<text class="dialog-title">选择路径</text>
 		<scroll-view class="dialog-container">
-      <view class="folder-item" hover-class="folder-active" v-for="item in 15">
-        <text class="folder-name">文件名</text>
-        <uni-icons color="#ccc" type="right" size="22"></uni-icons>
-      </view>
+			<view class="folder-item" hover-class="folder-active" @click="handleBack" v-if="currentPid.length > 1">
+				<text class="folder-name root-name">返回上一级</text>
+				<uni-icons color="#ccc" type="right" size="22"></uni-icons>
+			</view>
+			<view class="folder-item" hover-class="folder-active" v-for="item in currentDirList" :key="item.fid" @click="handleSelectDir(item)">
+				<text class="folder-name ellipsis">{{item.fn}}</text>
+				<uni-icons v-if="item.fc == '0'" color="#ccc" type="right" size="22"></uni-icons>
+			</view>
 		</scroll-view>
-    <view class="deal-container">
-      <button class="deal-btn" @click="handleCancel">取消</button>
-      <button class="deal-btn">确定</button>
-    </view>
+		<view class="deal-container">
+			<button class="deal-btn" @click="handleCancel">取消</button>
+			<button class="deal-btn" @click="handleSure">确定</button>
+		</view>
 	</page-container>
 </template>
 
 <style scoped lang="scss">
-.dialog-title {
-  padding: 10px;
-  font-weight: 700;
-  text-align: center;;
-}
-.dialog-container {
-  width: 300px;
-  height: 400px;
-  .folder-item {
-    height: 40px;
-    padding: 0 10px;
+	.dialog-title {
+		padding: 10px;
+		font-weight: 700;
+		text-align: center;
+		;
+	}
+
+	.dialog-container {
+		width: 300px;
+		height: 400px;
     border-top: 1px solid #eee;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    &:first-child {
-      border-top: none;
-    }
-  }
-}
-.folder-active {
-  background-color: #f5f5f5;
-}
-.deal-container {
-  width: 300px;
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  .deal-btn {
-    flex: 1;
-    background-color: transparent;
-    border-radius: 0;
-  }
-}
+		.folder-item {
+			height: 40px;
+			padding: 0 10px;
+			border-bottom: 1px solid #eee;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			&:last-child {
+				border-top: none;
+			}
+      .folder-name {
+        color: #555;
+        &.root-name {
+          color: $tabBarSelectColor;
+        }
+      }
+		}
+	}
+
+	.folder-active {
+		background-color: #f5f5f5;
+	}
+
+	.deal-container {
+		width: 300px;
+		display: flex;
+		align-items: center;
+		flex-direction: row;
+
+		.deal-btn {
+			flex: 1;
+			background-color: transparent;
+			border-radius: 0;
+		}
+	}
 </style>

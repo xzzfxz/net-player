@@ -2,20 +2,58 @@
 	import NavigationBar from '@/components/NavigationBar/index.uvue'
 	import SongItem from "./components/songItem.uvue"
 	import PathDialog from "./components/pathDialog.uvue"
+	import { IPathStack, IGroupItem } from '@/types'
+	import { handleUpdateGroupInfo } from '@/store'
 
 	const filterValue = ref("")
 	const showPathDialog = ref(false)
+	const groupInfo = ref<IGroupItem>({name: "", path: "", id: ""})
 
 	// 返回
 	const handleBack = () => {
 		uni.navigateBack()
 	}
 
-	// 选择路径
+	// 显示选择路径弹窗
 	const handleChagePath = () => {
-		console.log('选择路径');
 		showPathDialog.value = true;
 	}
+
+	// 加载数据
+	const handleLoadData = async (offset: number) => {
+	  try {
+			const arr = await fetchFolders({ cid: groupInfo.value.id, show_dir: 0, limit: 1150, offset });
+		} catch (err) {
+			console.log("获取文件信息失败", err)
+			return
+		}
+	  // const songList = res.data!.map(item => {
+	  //   const nameArray = item.fn.split('-');
+	  //   return {
+	  //     name: nameArray[0]?.trim(),
+	  //     author: nameArray[1]?.trim(),
+	  //     id: item.fid,
+	  //     ism: item.ism,
+	  //     pickCode: item.pc,
+	  //     star: item.star,
+	  //     timeLong: item.play_long
+	  //   };
+	  // });
+	  // if (songList.length === 1150) {
+	  //   handleLoadData(offset + 1150);
+	  // }
+	  // mainStore.setSongList(songList, !!offset);
+	};
+
+	// 选定路径
+	const handlePathSure = (pathArray: IPathStack[]) => {
+	  const lastPath = pathArray[pathArray.length - 1];
+	  const path = pathArray.map(item => item.name).join('/');
+	  groupInfo.value = { ...groupInfo.value, path, id: lastPath.fid };
+	  handleUpdateGroupInfo(groupInfo.value);
+	  // 获取文件列表
+	  handleLoadData(0);
+	};
 
 	// 清除过滤
 	const handleClearFilter = () => {
@@ -41,7 +79,7 @@
 				<SongItem />
 			</list-item>
 		</list-view>
-		<PathDialog v-if="showPathDialog" @close="showPathDialog = false" />
+		<PathDialog v-if="showPathDialog" @close="showPathDialog = false" @sure="handlePathSure" />
 	</view>
 </template>
 

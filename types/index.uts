@@ -8,7 +8,25 @@ export type ITabBarItem = {
 // 分组
 export type IGroupItem = {
 	name : string,
-	id ?: string,
+  // 文件fid
+	id : string,
 	path ?: string
 }
 
+/**
+ * @description: 目录树
+ * @return {*}
+ */
+export type IDirTree {
+  fid: string;
+  pid: string;
+  fn: string;
+  fc: string;
+  children: IDirTree[];
+}
+
+// 选择路径时的路径栈
+export type IPathStack = {
+  fid: string;
+  name: string;
+}
