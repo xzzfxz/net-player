@@ -1,0 +1,64 @@
+<script setup lang="uts">
+  const emit = defineEmits(['close'])
+
+  const showDialog = ref(true)
+
+  // 关闭
+  const handleCancel = () => {
+    emit('close')
+  }
+</script>
+
+<template>
+	<page-container :show="showDialog" position="center" :round="true" style="borderRadius: 10px;">
+    <text class="dialog-title">选择路径</text>
+		<scroll-view class="dialog-container">
+      <view class="folder-item" hover-class="folder-active" v-for="item in 15">
+        <text class="folder-name">文件名</text>
+        <uni-icons color="#ccc" type="right" size="22"></uni-icons>
+      </view>
+		</scroll-view>
+    <view class="deal-container">
+      <button class="deal-btn" @click="handleCancel">取消</button>
+      <button class="deal-btn">确定</button>
+    </view>
+	</page-container>
+</template>
+
+<style scoped lang="scss">
+.dialog-title {
+  padding: 10px;
+  font-weight: 700;
+  text-align: center;;
+}
+.dialog-container {
+  width: 300px;
+  height: 400px;
+  .folder-item {
+    height: 40px;
+    padding: 0 10px;
+    border-top: 1px solid #eee;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    &:first-child {
+      border-top: none;
+    }
+  }
+}
+.folder-active {
+  background-color: #f5f5f5;
+}
+.deal-container {
+  width: 300px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  .deal-btn {
+    flex: 1;
+    background-color: transparent;
+    border-radius: 0;
+  }
+}
+</style>

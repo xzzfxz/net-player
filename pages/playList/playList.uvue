@@ -1,8 +1,10 @@
 <script setup lang="uts">
 	import NavigationBar from '@/components/NavigationBar/index.uvue'
 	import SongItem from "./components/songItem.uvue"
+	import PathDialog from "./components/pathDialog.uvue"
 
 	const filterValue = ref("")
+	const showPathDialog = ref(false)
 
 	// 返回
 	const handleBack = () => {
@@ -12,6 +14,7 @@
 	// 选择路径
 	const handleChagePath = () => {
 		console.log('选择路径');
+		showPathDialog.value = true;
 	}
 
 	// 清除过滤
@@ -38,6 +41,7 @@
 				<SongItem />
 			</list-item>
 		</list-view>
+		<PathDialog v-if="showPathDialog" @close="showPathDialog = false" />
 	</view>
 </template>
 
