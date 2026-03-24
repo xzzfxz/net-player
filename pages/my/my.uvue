@@ -19,6 +19,18 @@
 		const handleRefreshToken = async () => {
 			await getRefreshToken(true)
 		}
+
+		// 清除缓存
+		const handleClearCache = () => {
+			uni.showModal({
+				content: "确定要清除缓存?",
+				success: (res) => {
+					if (res.confirm) {
+						console.log("点击了确认")
+					}
+				}
+			})
+		}
 </script>
 
 <template>
@@ -30,6 +42,7 @@
 				<text class="login-status" v-if="mainStore.accessToken">(已登录)</text>
 			</button>
 			<button class="login-btn" @click="handleRefreshToken">刷新登录状态</button>
+			<button class="login-btn warn" type="warn" @click="handleClearCache">清除缓存</button>
 		</view>
 	</view>
 </template>
@@ -37,6 +50,7 @@
 <style lang="scss" scoped>
 		.my-container {
 			height: 100%;
+			background-color: $bodyBgColor;
 		}
 		.login-container {
 			padding: 10px;
@@ -45,6 +59,9 @@
 				border: 1px solid $borderColor;
 				background-color: transparent;
 				color: $navTextColor;
+				&.warn {
+					background-color: #ff4444;
+				}
 			}
 			.login-status {
 				color: #00c165;

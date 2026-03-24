@@ -6,7 +6,6 @@
 
 	// 返回
 	const handleBack = () => {
-		console.log('返回');
 		uni.navigateBack()
 	}
 

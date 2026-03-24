@@ -2,11 +2,11 @@
 export const Font_Info = {
   my: '\ue601',
   home: '\ue6fe',
-  play: '\ue62d',
+  pause: '\ue62d',
   music: '\ue630',
   prePlay: '\ue62f',
   nextPlay: '\ue62e',
-  pause: '\ue62a',
+  play: '\ue62a',
   random: '\ue622',
   singleLoop: '\ue620',
   loop: '\ue61f',

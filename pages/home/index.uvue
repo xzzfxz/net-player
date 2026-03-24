@@ -1,9 +1,9 @@
 <script setup lang="uts">
 	import { IGroupItem } from '../../types';
-	import { mainStore } from '@/store'
 	import NavigationBar from '@/components/NavigationBar/index.uvue'
 	import { mainStore, handleAddGroup, handleDeleteGroup } from "@/store"
 	import { showToast } from "@/utils"
+	import PlayControl from '@/components/PlayControl/index.uvue'
 
 	// 显示添加分组弹窗
 	const handleRightClick = () => {
@@ -28,40 +28,49 @@
 	}
 
 	// 跳转到列表页
-	const handleToGroupDetail = (group : IGroupItem) => { 
+	const handleToGroupDetail = (group : IGroupItem) => {
 		uni.navigateTo({
 			url: `/pages/playList/playList?name=${group.name}&path=${group.path}`,
 		})
 	}
 
 	// 删除分组
-	const handleDelete = (group : IGroupItem) => { 
+	const handleDelete = (group : IGroupItem) => {
 		handleDeleteGroup(group.name)
 	}
 </script>
 
 <template>
-	<NavigationBar showRight title="首页" @rightClick="handleRightClick">
-		<template #right>
-			<uni-icons color="#fff" type="plusempty" size="30"></uni-icons>
-		</template>
-	</NavigationBar>
-	<scroll-view class="home-container">
-		<l-swipe-cell v-for="item in mainStore.groupList" :key="item.name">
-			<view class="group-item" @click="handleToGroupDetail(item)">
-				<text class="group-name">{{ item.name }}</text>
-				<text class="group-path">{{ item.path }}</text>
-			</view>
+	<view class="all-container">
+		<NavigationBar showRight title="首页" @rightClick="handleRightClick">
 			<template #right>
-				<view class="right-container flex-center" @click="handleDelete(item)"><text
-						class="delete-text">删除</text></view>
+				<uni-icons color="#fff" type="plusempty" size="30"></uni-icons>
 			</template>
-		</l-swipe-cell>
-
-	</scroll-view>
+		</NavigationBar>
+		<scroll-view class="home-container">
+			<l-swipe-cell v-for="item in mainStore.groupList" :key="item.name">
+				<view class="group-item" @click="handleToGroupDetail(item)">
+					<text class="group-name">{{ item.name }}</text>
+					<text class="group-path">{{ item.path }}</text>
+				</view>
+				<template #right>
+					<view class="right-container flex-center" @click="handleDelete(item)"><text
+							class="delete-text">删除</text></view>
+				</template>
+			</l-swipe-cell>
+		</scroll-view>
+		<view class="control-container">
+			<PlayControl />
+		</view>
+	</view>
 </template>
 
 <style scoped lang="scss">
+	.all-container {
+		height: 100%;
+		background-color: $bodyBgColor;
+	}
+
 	.home-container {
 		flex: 1;
 		padding: 8px 10px 0;
@@ -85,6 +94,7 @@
 			font-size: 12px;
 		}
 	}
+
 	.right-container {
 		width: 60px;
 		height: 48px;
