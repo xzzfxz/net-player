@@ -31,6 +31,15 @@ const getInitialState = () : IMainStore => {
 }
 export const mainStore = reactive<IMainStore>(getInitialState())
 
+// 当前播放的列表
+export const currentPlayList = computed(() => {
+	if (mainStore.currentGroup == null) {
+		return [] as ISongItem[];
+	}
+	const list = mainStore.groupSongArray.find(item => item.groupName == mainStore.currentGroup?.name)?.songList ?? []
+	return list;
+})
+
 // 设置当前分组
 export const setCurrentGroup = (group : IGroupItem) => {
 	mainStore.currentGroup = group

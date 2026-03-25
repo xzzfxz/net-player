@@ -1,0 +1,6 @@
+export const audioBgManager = uni.getBackgroundAudioManager();
+
+// 开始播放
+export const startPlayAudio = () => {
+  // audioBgManager.src = ""
+}
