@@ -2,12 +2,48 @@
 	import NavigationBar from '@/components/NavigationBar/index.uvue'
 	import SongItem from "./components/songItem.uvue"
 	import PathDialog from "./components/pathDialog.uvue"
-	import { IPathStack, IGroupItem } from '@/types'
-	import { handleUpdateGroupInfo } from '@/store'
+	import { IPathStack, IGroupItem, ISongItem } from '@/types'
+	import { handleUpdateGroupInfo, setGroupSongMap, mainStore } from '@/store'
+	import { fetchFolders } from "@/api"
+	import { showToast } from '@/utils'
+	import Icon from '@/components/Icon/index.uvue'
+	import { Font_Info } from '@/const/font'
+	import PlayControl from '@/components/PlayControl/index.uvue'
 
 	const filterValue = ref("")
 	const showPathDialog = ref(false)
-	const groupInfo = ref<IGroupItem>({name: "", path: "", id: ""})
+	const groupInfo = ref<IGroupItem>({ name: "", path: "", id: "" })
+	const refreshing = ref(false)
+	const scrollIntoViewId = ref("")
+	const currentSongList = ref<ISongItem[]>([])
+	const timeOut = ref(0)
+
+	const handleSetList = () => {
+		if (timeOut.value != 0) {
+			clearTimeout(timeOut.value)
+			timeOut.value = 0
+		}
+		setTimeout(() => {
+			const list : ISongItem[] = mainStore.groupSongArray.find(item => item.groupName == groupInfo.value.name)?.songList ?? []
+			let lastList = list;
+			if (filterValue.value != "") {
+				const lowerInput = filterValue.value.toLowerCase();
+				lastList = list.filter(item => {
+					const lowerName = item.name.toLowerCase() ?? '';
+					const lowerAuthor = item.author.toLowerCase() ?? '';
+					return lowerName.includes(lowerInput) || lowerAuthor.includes(lowerInput)
+				})
+			}
+			if (lastList.length > 100) {
+				currentSongList.value = lastList.slice(0, 100)
+				setTimeout(() => {
+					currentSongList.value = lastList
+				}, 500)
+			} else {
+				currentSongList.value = lastList
+			}
+		}, 100)
+	}
 
 	// 返回
 	const handleBack = () => {
@@ -20,45 +56,82 @@
 	}
 
 	// 加载数据
-	const handleLoadData = async (offset: number) => {
-	  try {
-			const arr = await fetchFolders({ cid: groupInfo.value.id, show_dir: 0, limit: 1150, offset });
+	async function handleLoadData(offset : number) {
+		const limit = 1150
+		try {
+			let arr = await fetchFolders({ cid: groupInfo.value.id, show_dir: 0, limit, offset });
+			arr = arr.filter(item => item["fn"] != null)
+			const songList : ISongItem[] = arr.map(item => {
+				const nameArray = (item["fn"] as string).split('-');
+				const author = nameArray.length > 1 ? nameArray[1] : "未知歌手"
+				let ism = item["ism"]
+				if (ism != null) {
+					ism = ism as string;
+				}
+				let star = item["star"]
+				if (star != null) {
+					star = star as string;
+				}
+				return {
+					name: nameArray[0] as string,
+					author,
+					id: item["fid"] as string,
+					ism,
+					pickCode: item["pc"] as string,
+					star,
+					timeLong: item["play_long"] as number
+				} as ISongItem;
+			});
+			setGroupSongMap(groupInfo.value.name, songList, offset > 0)
+			if (songList.length === limit) {
+				handleLoadData(offset + limit);
+			}
 		} catch (err) {
-			console.log("获取文件信息失败", err)
+			console.log("获取文件列表失败", err)
+			showToast("获取文件列表失败", "error")
 			return
+		} finally {
+			// 重新加载数据
+			handleSetList()
 		}
-	  // const songList = res.data!.map(item => {
-	  //   const nameArray = item.fn.split('-');
-	  //   return {
-	  //     name: nameArray[0]?.trim(),
-	  //     author: nameArray[1]?.trim(),
-	  //     id: item.fid,
-	  //     ism: item.ism,
-	  //     pickCode: item.pc,
-	  //     star: item.star,
-	  //     timeLong: item.play_long
-	  //   };
-	  // });
-	  // if (songList.length === 1150) {
-	  //   handleLoadData(offset + 1150);
-	  // }
-	  // mainStore.setSongList(songList, !!offset);
 	};
 
 	// 选定路径
-	const handlePathSure = (pathArray: IPathStack[]) => {
-	  const lastPath = pathArray[pathArray.length - 1];
-	  const path = pathArray.map(item => item.name).join('/');
-	  groupInfo.value = { ...groupInfo.value, path, id: lastPath.fid };
-	  handleUpdateGroupInfo(groupInfo.value);
-	  // 获取文件列表
-	  handleLoadData(0);
+	const handlePathSure = (pathArray : IPathStack[]) => {
+		showPathDialog.value = false;
+		const lastPath = pathArray[pathArray.length - 1];
+		const path = pathArray.map(item => item.name).join('/');
+		groupInfo.value = { ...groupInfo.value, path, id: lastPath.fid };
+		handleUpdateGroupInfo(groupInfo.value);
+		// 获取文件列表
+		handleLoadData(0);
 	};
+
+	// 下拉刷新
+	const handleRefresh = async () => {
+		refreshing.value = true
+		await handleLoadData(0)
+		refreshing.value = false
+	}
+
+	// 滚动到顶部
+	const handleScrollToView = (index : number) => {
+		scrollIntoViewId.value = "view_" + currentSongList.value[index].id
+	}
 
 	// 清除过滤
 	const handleClearFilter = () => {
 		filterValue.value = ""
 	}
+
+	// 初始化数据
+	onLoad(options => {
+		const name = options["name"] ?? "";
+		const path = options["path"] ?? "";
+		const id = options["id"] ?? "";
+		groupInfo.value = { name, path, id };
+		handleSetList()
+	})
 </script>
 
 <template>
@@ -69,17 +142,30 @@
 			</template>
 		</NavigationBar>
 		<view class="filter-container">
-			<input v-model="filterValue" class="filter-input" placeholder="请输入歌名或歌手"></input>
+			<input v-model="filterValue" class="filter-input" placeholder="请输入歌名或歌手" @input="handleSetList"></input>
 			<uni-icons v-if="filterValue" class="filter-icon" color="#ccc" type="close" size="30"
 				@click="handleClearFilter"></uni-icons>
 		</view>
-		<text class="count-text">共40首</text>
-		<list-view class="list-container" refresher-enabled="true">
-			<list-item class="list-item" v-for="item in 5">
-				<SongItem />
+		<text class="count-text">共{{ currentSongList.length }}首</text>
+		<list-view class="list-container" refresher-enabled="true" :refresher-triggered="refreshing"
+			:scroll-into-view="scrollIntoViewId" @refresherrefresh="handleRefresh()">
+			<list-item class="list-item" v-for="(item, index) in currentSongList" :id="'view_' + item.id"
+				:key="item.id">
+				<SongItem :song="item" :songIndex="index + 1" />
 			</list-item>
 		</list-view>
+		<view class="control-container">
+			<PlayControl />
+		</view>
 		<PathDialog v-if="showPathDialog" @close="showPathDialog = false" @sure="handlePathSure" />
+		<view class="float-view">
+			<view class="aim-button up-button flex-center" hover-class="aim-hover" @click="handleScrollToView(0)">
+				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.up"></Icon>
+			</view>
+			<view class="aim-button flex-center" hover-class="aim-hover">
+				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.aim"></Icon>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -88,7 +174,7 @@
 		height: 100%;
 		background-color: $bodyBgColor;
 		display: flex;
-		;
+		position: relative;
 	}
 
 	.filter-container {
@@ -126,6 +212,43 @@
 
 		.list-item {
 			margin-bottom: 4px;
+		}
+	}
+
+	.control-container {
+		padding-bottom: 20px;
+	}
+
+	.aim-hover {
+		background-color: #ddd;
+	}
+
+	.float-view {
+		display: flex;
+		position: fixed;
+		bottom: 90px;
+		right: 16px;
+
+		.aim-button {
+			width: 50px;
+			height: 50px;
+			padding: 0;
+			border-radius: 50%;
+			background-color: #fff;
+
+			&.up-button {
+				margin-bottom: 10px;
+
+				.aim-icon {
+					position: relative;
+					top: -2px;
+				}
+			}
+		}
+
+		.aim-icon {
+			font-size: 26px;
+			font-weight: 400;
 		}
 	}
 </style>

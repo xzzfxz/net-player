@@ -1,36 +1,36 @@
 <script setup lang="uts">
-		import NavigationBar from '@/components/NavigationBar/index.uvue'
-		import { generateRandomCode } from '@/utils'
-		import { openSchema } from '@/uni_modules/uts-openSchema'
-		import { mainStore, setRedirectUri } from '@/store'
-		import { getRefreshToken } from '@/utils'
+	import NavigationBar from '@/components/NavigationBar/index.uvue'
+	import { generateRandomCode } from '@/utils'
+	import { openSchema } from '@/uni_modules/uts-openSchema'
+	import { mainStore, setRedirectUri } from '@/store'
+	import { getRefreshToken } from '@/utils'
 
-		// 登录
-		const handleLogin = () => {
-			const state = generateRandomCode();
-  		const clientId = '100197839';
-  		const redirectUri = encodeURIComponent('https://staticweb.lichongukh.workers.dev/html/netPlayer') as string;
-			setRedirectUri(redirectUri)
-  		const openUrlStr = `https://passportapi.115.com/open/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&state=${state}`;
-  		openSchema(openUrlStr);
-		}
+	// 登录
+	const handleLogin = () => {
+		const state = generateRandomCode();
+		const clientId = '100197839';
+		const redirectUri = encodeURIComponent('https://staticweb.lichongukh.workers.dev/html/netPlayer') as string;
+		setRedirectUri(redirectUri)
+		const openUrlStr = `https://passportapi.115.com/open/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&state=${state}`;
+		openSchema(openUrlStr);
+	}
 
-		// 刷新token
-		const handleRefreshToken = async () => {
-			await getRefreshToken(true)
-		}
+	// 刷新token
+	const handleRefreshToken = async () => {
+		await getRefreshToken(true)
+	}
 
-		// 清除缓存
-		const handleClearCache = () => {
-			uni.showModal({
-				content: "确定要清除缓存?",
-				success: (res) => {
-					if (res.confirm) {
-						console.log("点击了确认")
-					}
+	// 清除缓存
+	const handleClearCache = () => {
+		uni.showModal({
+			content: "确定要清除缓存?",
+			success: (res) => {
+				if (res.confirm) {
+					console.log("点击了确认")
 				}
-			})
-		}
+			}
+		})
+	}
 </script>
 
 <template>
@@ -48,23 +48,27 @@
 </template>
 
 <style lang="scss" scoped>
-		.my-container {
-			height: 100%;
-			background-color: $bodyBgColor;
-		}
-		.login-container {
-			padding: 10px;
-			.login-btn {
-				margin-bottom: 10px;
-				border: 1px solid $borderColor;
-				background-color: transparent;
-				color: $navTextColor;
-				&.warn {
-					background-color: #ff4444;
-				}
+	.my-container {
+		height: 100%;
+		background-color: $bodyBgColor;
+	}
+
+	.login-container {
+		padding: 10px;
+
+		.login-btn {
+			margin-bottom: 10px;
+			border: 1px solid $borderColor;
+			background-color: transparent;
+			color: $navTextColor;
+
+			&.warn {
+				background-color: #ff4444;
 			}
-			.login-status {
-				color: #00c165;
-			}
 		}
+
+		.login-status {
+			color: #00c165;
+		}
+	}
 </style>

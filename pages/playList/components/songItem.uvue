@@ -1,5 +1,18 @@
 <script setup lang="uts">
-	const rightOptions = [{ text: "删除" }]
+	import type { ISongItem } from "@/types";
+
+	const props = defineProps({
+		song: {
+			type: Object,
+			default: () => ({})
+		},
+		songIndex: {
+			type: Number,
+			default: 1
+		}
+	})
+
+	const songData = props.song as ISongItem
 
 	// 删除
 	const handleDelete = () => {
@@ -9,14 +22,14 @@
 
 <template>
 	<l-swipe-cell>
-		<view class="song-container">
+		<view class="song-container" :class="{selected: props.songIndex == 1}">
 			<view class="num-container flex-center">
-				<text class="num">2000</text>
+				<text class="num">{{props.songIndex}}</text>
 			</view>
 			<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png"></image>
 			<view class="song-info">
-				<text class="song-name ellipsis">歌曲名称歌曲名称歌曲名称歌曲名称</text>
-				<text class="song-artist ellipsis">歌手</text>
+				<text class="song-name ellipsis">{{songData.name}}</text>
+				<text class="song-artist ellipsis">{{songData.author}}</text>
 			</view>
 		</view>
 		<template #right>
@@ -32,8 +45,16 @@
 		border-radius: 4px;
 		display: flex;
 		align-items: center;
-		;
 		flex-direction: row;
+
+		&.selected {
+			border-color: #00c165;
+			background-color: #00c165;
+
+			.song-artist {
+				color: #fff;
+			}
+		}
 	}
 
 	.num-container {

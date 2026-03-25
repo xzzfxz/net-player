@@ -1,6 +1,6 @@
 import { fetchTokenByCode, postRefreshToken, fetchFolders } from "@/api";
 import { mainStore, setTokenInfo } from "@/store";
-import {dayjs} from "@/uni_modules/kux-dayjs"
+import { dayjs } from "@/uni_modules/kux-dayjs"
 import type { IDirTree } from "@/types";
 
 // toast
@@ -19,10 +19,7 @@ export const showToast = (title : string, icon ?: "success" | "error" | "warning
 	})
 }
 
-/**
- * @description: 生成随机code
- * @return {*}
- */
+// 生成随机code
 export const generateRandomCode = () => {
 	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	let result = "";
@@ -64,23 +61,22 @@ export const handleAppLaunchParams = async (options : OnShowOptions) => {
 	}
 }
 
-// 刷新token
-/**
- * @description: 获取refreshToken
- * @return {*}
- */
-export const getRefreshToken = async (force: boolean) => {
-  if (!force) {
-    if (mainStore.refreshToken == "" || mainStore.expiresIn > dayjs().unix()) {
-      return;
-    }
-  }
-  try {
-    const res = await postRefreshToken(mainStore.refreshToken)
-    setTokenInfo(res)
-  } catch (err) {
-    console.log("刷新token错误：", err)
-  }
+// 获取refreshToken
+export const getRefreshToken = async (force : boolean) => {
+	if (!force) {
+		if (mainStore.refreshToken == "" || mainStore.expiresIn > dayjs().unix()) {
+			return;
+		}
+	}
+	try {
+		const res = await postRefreshToken(mainStore.refreshToken)
+		setTokenInfo(res)
+		if (force) {
+			showToast("刷新成功", "success")
+		}
+	} catch (err) {
+		console.log("刷新token错误：", err)
+	}
 };
 
 /**
@@ -89,16 +85,16 @@ export const getRefreshToken = async (force: boolean) => {
  * @param {number} showDir
  * @return {*}
  */
-export const getFolderInfo = async (cid: string, showDir: number): Promise<IDirTree[]> => {
+export const getFolderInfo = async (cid : string, showDir : number) : Promise<IDirTree[]> => {
 	try {
 		const arr = await fetchFolders({ cid, show_dir: showDir });
 		return arr.map(item => ({
-  	  fid: (item["fid"] as string) + '',
-  	  fn: item["fn"] as string,
-  	  pid: (item["pid"] as string) + '',
-  	  fc: item["fc"] as string,
-  	  children: []
-  	} as IDirTree));
+			fid: (item["fid"] as string) + '',
+			fn: item["fn"] as string,
+			pid: (item["pid"] as string) + '',
+			fc: item["fc"] as string,
+			children: []
+		} as IDirTree));
 	} catch (err) {
 		console.log("获取文件夹信息失败", err)
 		return []

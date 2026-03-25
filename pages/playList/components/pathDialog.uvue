@@ -46,11 +46,11 @@
 			return;
 		}
 		const res = await getFolderInfo(currentDir.fid, 1);
-    if (res != null) {
-      currentDir.children = res;
-    } else {
-      currentDir.children = []
-    }
+		if (res != null) {
+			currentDir.children = res;
+		} else {
+			currentDir.children = []
+		}
 		currentPid.value.push({ fid: currentDir.fid, name: currentDir.fn } as IPathStack);
 	};
 
@@ -87,7 +87,8 @@
 				<text class="folder-name root-name">返回上一级</text>
 				<uni-icons color="#ccc" type="right" size="22"></uni-icons>
 			</view>
-			<view class="folder-item" hover-class="folder-active" v-for="item in currentDirList" :key="item.fid" @click="handleSelectDir(item)">
+			<view class="folder-item" hover-class="folder-active" v-for="item in currentDirList" :key="item.fid"
+				@click="handleSelectDir(item)">
 				<text class="folder-name ellipsis">{{item.fn}}</text>
 				<uni-icons v-if="item.fc == '0'" color="#ccc" type="right" size="22"></uni-icons>
 			</view>
@@ -110,7 +111,8 @@
 	.dialog-container {
 		width: 300px;
 		height: 400px;
-    border-top: 1px solid #eee;
+		border-top: 1px solid #eee;
+
 		.folder-item {
 			height: 40px;
 			padding: 0 10px;
@@ -119,15 +121,18 @@
 			flex-direction: row;
 			align-items: center;
 			justify-content: space-between;
+
 			&:last-child {
 				border-top: none;
 			}
-      .folder-name {
-        color: #555;
-        &.root-name {
-          color: $tabBarSelectColor;
-        }
-      }
+
+			.folder-name {
+				color: #555;
+
+				&.root-name {
+					color: $tabBarSelectColor;
+				}
+			}
 		}
 	}
 

@@ -1,14 +1,16 @@
 // 字体映射
 export const Font_Info = {
-  my: '\ue601',
-  home: '\ue6fe',
-  pause: '\ue62d',
-  music: '\ue630',
-  prePlay: '\ue62f',
-  nextPlay: '\ue62e',
-  play: '\ue62a',
-  random: '\ue622',
-  singleLoop: '\ue620',
-  loop: '\ue61f',
-  delete: '\ue61d', // 👈 1. 修改为 \u 格式  2. 补上逗号
+	my: '\ue601',
+	home: '\ue6fe',
+	pause: '\ue62d',
+	music: '\ue630',
+	prePlay: '\ue62f',
+	nextPlay: '\ue62e',
+	play: '\ue62a',
+	random: '\ue622',
+	singleLoop: '\ue620',
+	loop: '\ue61f',
+	delete: '\ue61d', // 👈 1. 修改为 \u 格式  2. 补上逗号
+	aim: '\ue67d',
+	up: '\ued4f'
 }

@@ -22,5 +22,9 @@
 		&.selected {
 			color: $tabBarSelectColor !important;
 		}
+
+		&.aim-icon {
+			color: #000 !important;
+		}
 	}
 </style>

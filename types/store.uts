@@ -1,11 +1,13 @@
-import type { IGroupItem } from "./index"
+import type { IGroupItem, ISongItem, IGroupSong } from "./index"
 
 // 主mainStore
 export type IMainStore = {
-  currentTab: string,
-  groupList: IGroupItem[],
-  redirectUri: string,
-  accessToken: string,
-  refreshToken: string,
-  expiresIn: number,
+	currentTab : string,
+	currentGroup ?: IGroupItem,
+	groupList : IGroupItem[],
+	redirectUri : string,
+	accessToken : string,
+	refreshToken : string,
+	expiresIn : number,
+	groupSongArray : IGroupSong[]
 }

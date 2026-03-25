@@ -1,16 +1,16 @@
 <script setup lang="uts">
-		import NavigationBar from '@/components/NavigationBar/index.uvue'
-		import Icon from '@/components/Icon/index.uvue'
-		import { Font_Info } from '@/const/font'
+	import NavigationBar from '@/components/NavigationBar/index.uvue'
+	import Icon from '@/components/Icon/index.uvue'
+	import { Font_Info } from '@/const/font'
 
-		const handleBack = () => {
-			uni.navigateBack()
-		}
+	const handleBack = () => {
+		uni.navigateBack()
+	}
 </script>
 
 <template>
 	<view class="detail-container safe-area-inset-bottom">
-		<NavigationBar title="我的" showLeft  @leftClick="handleBack">
+		<NavigationBar title="我的" showLeft @leftClick="handleBack">
 		</NavigationBar>
 		<view class="content-container">
 			<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png"></image>
@@ -25,74 +25,84 @@
 			</view>
 			<view class="control-container">
 				<button class="control-btn">
-    		  <!-- <Icon class="control-icon" :name="Font_Info.singleLoop"></Icon> -->
-    		  <!-- <Icon class="control-icon" :name="Font_Info.loop"></Icon> -->
-    		  <Icon class="control-icon" className="selected" :name="Font_Info.random"></Icon>
-    		</button>
+					<!-- <Icon class="control-icon" :name="Font_Info.singleLoop"></Icon> -->
+					<!-- <Icon class="control-icon" :name="Font_Info.loop"></Icon> -->
+					<Icon class="control-icon" className="selected" :name="Font_Info.random"></Icon>
+				</button>
 				<button class="control-btn">
-    		  <Icon class="control-icon" className="selected" :name="Font_Info.prePlay"></Icon>
-    		</button>
-    		<button class="control-btn">
-    		  <Icon class="control-icon" className="selected" :name="Font_Info.play"></Icon>
-    		  <!-- <Icon class="control-icon" :name="Font_Info.pause"></Icon> -->
-    		</button>
-    		<button class="control-btn">
-    		  <Icon class="control-icon" className="selected" :name="Font_Info.nextPlay"></Icon>
-    		</button>
+					<Icon class="control-icon" className="selected" :name="Font_Info.prePlay"></Icon>
+				</button>
+				<button class="control-btn">
+					<Icon class="control-icon" className="selected" :name="Font_Info.play"></Icon>
+					<!-- <Icon class="control-icon" :name="Font_Info.pause"></Icon> -->
+				</button>
+				<button class="control-btn">
+					<Icon class="control-icon" className="selected" :name="Font_Info.nextPlay"></Icon>
+				</button>
 			</view>
 		</view>
 	</view>
 </template>
 
 <style scoped lang="scss">
-		.detail-container {
-			height: 100%;
-			background-color: $bodyBgColor;
-			display: flex;
+	.detail-container {
+		height: 100%;
+		background-color: $bodyBgColor;
+		display: flex;
+	}
+
+	.content-container {
+		height: 0;
+		flex: 1;
+		display: flex;
+		align-items: center;
+	}
+
+	.cover {
+		width: 60%;
+		margin: 10% auto;
+	}
+
+	.name {
+		color: #fff;
+		font-weight: 700;
+		font-size: 24px;
+	}
+
+	.artist {
+		color: #ccc;
+	}
+
+	.slider-container {
+		width: 80%;
+		margin-top: 10px;
+	}
+
+	.time-container {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+
+		.time-text {
+			color: #ddd;
 		}
-		.content-container {
-			height: 0;
-			flex: 1;
-			display: flex;
-			align-items: center;
-		}
-		.cover {
-			width: 60%;
-			margin: 10% auto;
-		}
-		.name {
-			color: #fff;
-			font-weight: 700;
+	}
+
+	.control-container {
+		width: 80%;
+		margin-top: 20px;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+	}
+
+	.control-btn {
+		margin-right: 6px;
+		background-color: transparent;
+		border-color: $tabBarSelectColor;
+
+		.control-icon {
 			font-size: 24px;
 		}
-		.artist {
-			color: #ccc;
-		}
-		.slider-container {
-			width: 80%;
-			margin-top: 10px;
-		}
-		.time-container {
-			display: flex;
-			flex-direction: row;
-			justify-content: space-between;
-			.time-text {
-				color: #ddd;
-			}
-		}
-		.control-container {
-			width: 80%;
-			margin-top: 20px;
-			display: flex;
-			flex-direction: row;
-			justify-content: space-around;
-		}
-		.control-btn {
-  	  margin-right: 6px;
-  	  background-color: transparent;
-  	  border-color: $tabBarSelectColor;
-  	  .control-icon {
-  	    font-size: 24px;
-  	  }
-  	}
+	}
 </style>

@@ -8,7 +8,7 @@ export type ITabBarItem = {
 // 分组
 export type IGroupItem = {
 	name : string,
-  // 文件fid
+	// 文件fid
 	id : string,
 	path ?: string
 }
@@ -18,15 +18,36 @@ export type IGroupItem = {
  * @return {*}
  */
 export type IDirTree {
-  fid: string;
-  pid: string;
-  fn: string;
-  fc: string;
-  children: IDirTree[];
+	fid : string;
+	pid : string;
+	fn : string;
+	fc : string;
+	children : IDirTree[];
 }
 
 // 选择路径时的路径栈
 export type IPathStack = {
-  fid: string;
-  name: string;
+	fid : string;
+	name : string;
+}
+
+// 保存的分组歌曲列表
+export type IGroupSong = {
+	groupName : string,
+	songList : ISongItem[]
+}
+
+
+/**
+ * @description: 歌曲信息
+ * @return {*}
+ */
+export type ISongItem = {
+	name : string;
+	author : string;
+	id : string;
+	ism ?: string;
+	pickCode : string;
+	timeLong : number;
+	star ?: string;
 }

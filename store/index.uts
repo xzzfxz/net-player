@@ -1,14 +1,15 @@
 import type { IMainStore } from "@/types/store.uts"
-import type { IGroupItem } from "../types"
-import type { ITokenResponse } from "@/types/response.uts"
+import type { IGroupItem, ISongItem, IGroupSong } from "@/types"
 import { setStorage, getStorage } from "@/utils/storage"
-import {dayjs} from "@/uni_modules/kux-dayjs"
+import { dayjs } from "@/uni_modules/kux-dayjs"
 
-const getInitialState = (): IMainStore => {
+const getInitialState = () : IMainStore => {
 	const storedData = getStorage("mainStore");
-	const initData: IMainStore = {
+	const initData : IMainStore = {
 		// 当前tabbar
 		currentTab: "home",
+		// 当前正在播放的分组
+		currentGroup: null,
 		// 分组列表
 		groupList: [{ name: "分组", path: "/musice", id: "" }],
 		// token
@@ -16,17 +17,24 @@ const getInitialState = (): IMainStore => {
 		accessToken: "",
 		refreshToken: "",
 		expiresIn: 0,
+		// 分组对应的歌曲列表
+		groupSongArray: []
 	}
 	if (storedData == null) {
 		return initData
 	}
 	const res = JSON.parseObject<IMainStore>(storedData as string)
 	if (res != null) {
-		return { ...initData, ...res}
+		return { ...initData, ...res }
 	}
 	return initData
 }
 export const mainStore = reactive<IMainStore>(getInitialState())
+
+// 设置当前分组
+export const setCurrentGroup = (group : IGroupItem) => {
+	mainStore.currentGroup = group
+}
 
 // 添加分组
 export const handleAddGroup = (name : string) => {
@@ -37,11 +45,17 @@ export const handleAddGroup = (name : string) => {
 	} as IGroupItem)
 }
 // 删除分组
-export const handleDeleteGroup = (name: string) => {
+export const handleDeleteGroup = (name : string) => {
 	mainStore.groupList = mainStore.groupList.filter(item => item.name != name)
+	if (mainStore.currentGroup?.name == name) {
+		// 清空当前选中分组
+		mainStore.currentGroup = null
+	}
+	// 删除分组对应的歌曲列表
+	mainStore.groupSongArray = mainStore.groupSongArray.filter(item => item.groupName != name)
 }
 // 修改分组
-export const handleUpdateGroupInfo = (groupInfo: IGroupItem) => {
+export const handleUpdateGroupInfo = (groupInfo : IGroupItem) => {
 	mainStore.groupList = mainStore.groupList.map(item => {
 		if (item.name == groupInfo.name) {
 			return groupInfo
@@ -51,16 +65,35 @@ export const handleUpdateGroupInfo = (groupInfo: IGroupItem) => {
 }
 
 // 设置重定向url
-export const setRedirectUri = (url: string) => {
+export const setRedirectUri = (url : string) => {
 	mainStore.redirectUri = url
 }
 
 // 设置token和过期时间
-export const setTokenInfo = (info: UTSJSONObject) => {
+export const setTokenInfo = (info : UTSJSONObject) => {
 	mainStore.accessToken = info["access_token"] as string
 	mainStore.refreshToken = info["refresh_token"] as string
 	const timestamp = dayjs().unix();
 	mainStore.expiresIn = timestamp + (info["expires_in"] as number)
+}
+
+// 设置分组对应的歌曲列表
+export const setGroupSongMap = (groupName : string, songList : ISongItem[], isAppend : boolean) => {
+	const preArray = mainStore.groupSongArray.find(item => item.groupName === groupName);
+	if (preArray != null) {
+		// 已保存过该分组
+		if (isAppend) {
+			preArray.songList.push(...songList)
+		} else {
+			preArray.songList = songList
+		}
+	} else {
+		// 未保存过该分组
+		mainStore.groupSongArray.push({
+			groupName,
+			songList
+		} as IGroupSong)
+	}
 }
 
 watch(mainStore, () => {

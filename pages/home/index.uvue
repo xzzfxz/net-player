@@ -30,7 +30,7 @@
 	// 跳转到列表页
 	const handleToGroupDetail = (group : IGroupItem) => {
 		uni.navigateTo({
-			url: `/pages/playList/playList?name=${group.name}&path=${group.path}`,
+			url: `/pages/playList/playList?name=${group.name}&path=${group.path}&id=${group.id}`,
 		})
 	}
 

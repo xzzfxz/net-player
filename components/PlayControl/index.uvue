@@ -1,37 +1,37 @@
 <script setup lang="uts">
-  import Icon from '@/components/Icon/index.uvue'
-  import { Font_Info } from '@/const/font'
-  
-  // 跳转到播放详情
-  const handleToDetail = () => {
-  	uni.navigateTo({
-  		url: '/pages/playDetail/playDetail'
-  	})
-  }
+	import Icon from '@/components/Icon/index.uvue'
+	import { Font_Info } from '@/const/font'
+
+	// 跳转到播放详情
+	const handleToDetail = () => {
+		uni.navigateTo({
+			url: '/pages/playDetail/playDetail'
+		})
+	}
 </script>
 
 <template>
 	<view class="play-container">
-		<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png"  @click="handleToDetail"></image>
+		<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png" @click="handleToDetail"></image>
 		<view class="info-container">
 			<text class="song-name ellipsis">歌曲名称歌曲名称歌曲名称歌曲名称歌曲名称歌曲名称歌曲名称歌曲名称</text>
 			<text class="song-artist ellipsis">歌手</text>
 		</view>
-    <button class="control-btn">
-      <Icon class="control-icon" :name="Font_Info.prePlay"></Icon>
-    </button>
-    <button class="control-btn">
-      <Icon class="control-icon" :name="Font_Info.play"></Icon>
-      <!-- <Icon class="control-icon" :name="Font_Info.pause"></Icon> -->
-    </button>
-    <button class="control-btn">
-      <Icon class="control-icon" :name="Font_Info.nextPlay"></Icon>
-    </button>
-    <button class="control-btn">
-      <!-- <Icon class="control-icon" :name="Font_Info.singleLoop"></Icon> -->
-      <!-- <Icon class="control-icon" :name="Font_Info.loop"></Icon> -->
-      <Icon class="control-icon" :name="Font_Info.random"></Icon>
-    </button>
+		<button class="control-btn">
+			<Icon class="control-icon" :name="Font_Info.prePlay"></Icon>
+		</button>
+		<button class="control-btn">
+			<Icon class="control-icon" :name="Font_Info.play"></Icon>
+			<!-- <Icon class="control-icon" :name="Font_Info.pause"></Icon> -->
+		</button>
+		<button class="control-btn">
+			<Icon class="control-icon" :name="Font_Info.nextPlay"></Icon>
+		</button>
+		<button class="control-btn">
+			<!-- <Icon class="control-icon" :name="Font_Info.singleLoop"></Icon> -->
+			<!-- <Icon class="control-icon" :name="Font_Info.loop"></Icon> -->
+			<Icon class="control-icon" :name="Font_Info.random"></Icon>
+		</button>
 	</view>
 </template>
 
@@ -40,6 +40,7 @@
 		height: 60px;
 		margin: 4px 10px;
 		border: 1px solid $borderColor;
+		box-shadow: 0 0 12px 4px rgba(15, 10, 77, 0.3);
 		border-radius: 4px;
 		display: flex;
 		flex-direction: row;
@@ -68,14 +69,15 @@
 			color: #ccc;
 		}
 	}
-  .control-btn {
-    padding: 0 4px;
-    margin-right: 6px;
-    background-color: transparent;
-    border-color: #ccc;
-    .control-icon {
-      font-size: 24px;
-    }
-  }
-  
+
+	.control-btn {
+		padding: 0 4px;
+		margin-right: 6px;
+		background-color: transparent;
+		border-color: #ccc;
+
+		.control-icon {
+			font-size: 24px;
+		}
+	}
 </style>
