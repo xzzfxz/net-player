@@ -1,4 +1,4 @@
-import { fetchTokenByCode, postRefreshToken, fetchFolders } from "@/api";
+import { fetchTokenByCode, postRefreshToken, fetchFolders, fetchFileUrl } from "@/api";
 import { mainStore, setTokenInfo } from "@/store";
 import { dayjs } from "@/uni_modules/kux-dayjs"
 import type { IDirTree } from "@/types";
@@ -99,4 +99,31 @@ export const getFolderInfo = async (cid : string, showDir : number) : Promise<ID
 		console.log("获取文件夹信息失败", err)
 		return []
 	}
+};
+
+/**
+ * @description: 获取文件url
+ * @param {string} id
+ * @param {string} pickCode
+ * @return {*}
+ */
+export const getFileUrl = async (id: string, pickCode: string): Promise<string> => {
+	try {
+		const res = await fetchFileUrl(pickCode);
+		console.log(res, "=======")
+		const fileInfo = res[id] as UTSJSONObject
+		const urlInfo = fileInfo["url"] as UTSJSONObject
+		const url = urlInfo["url"] ?? ""
+		return url as string;
+	} catch (err) {
+		showToast("获取文件url失败", "error")
+		console.log("获取文件url失败", err)
+		return ""
+	}
+  
+  // if (!res.data) {
+  //   return;
+  // }
+  // const obj = res.data[id];
+  // mainStore.setFileUrlInfo(id, obj.url.url);
 };

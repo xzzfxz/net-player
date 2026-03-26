@@ -18,7 +18,8 @@ const getInitialState = () : IMainStore => {
 		refreshToken: "",
 		expiresIn: 0,
 		// 分组对应的歌曲列表
-		groupSongArray: []
+		groupSongArray: [],
+		songLocalPath: {}
 	}
 	if (storedData == null) {
 		return initData

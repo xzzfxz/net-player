@@ -72,6 +72,12 @@
 				if (star != null) {
 					star = star as string;
 				}
+				let timeLong = item["play_long"];
+				if (timeLong != null) {
+					timeLong = timeLong as number
+				} else {
+					timeLong = 0;
+				}
 				return {
 					name: nameArray[0] as string,
 					author,
@@ -79,7 +85,7 @@
 					ism,
 					pickCode: item["pc"] as string,
 					star,
-					timeLong: item["play_long"] as number
+					timeLong
 				} as ISongItem;
 			});
 			setGroupSongMap(groupInfo.value.name, songList, offset > 0)

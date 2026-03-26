@@ -1,0 +1,2 @@
+// 下载地址
+export const Download_Dir = `${uni.env.CACHE_PATH}/music/`

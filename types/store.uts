@@ -9,5 +9,6 @@ export type IMainStore = {
 	accessToken : string,
 	refreshToken : string,
 	expiresIn : number,
-	groupSongArray : IGroupSong[]
+	groupSongArray : IGroupSong[],
+	songLocalPath: UTSJSONObject,
 }

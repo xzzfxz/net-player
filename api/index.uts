@@ -22,3 +22,10 @@ export const postRefreshToken = (refreshToken: string) => {
 export const fetchFolders = (params: UTSJSONObject) => {
 	return request.get<UTSArray<UTSJSONObject>>("https://proapi.115.com/open/ufile/files", params)
 }
+
+// 获取文件url
+export const fetchFileUrl = (pickCode: string) => {
+	return request.post<UTSJSONObject>("https://proapi.115.com/open/ufile/downurl", {
+		pick_code: pickCode,
+	})
+}
