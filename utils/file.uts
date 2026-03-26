@@ -1,0 +1,23 @@
+export const fsManager = uni.getFileSystemManager();
+
+// 读取文件夹，并返回文件列表
+export const getFolderFiles = (path: string) => {
+  return new Promise((resolve, reject) => {
+    fsManager.readdir({
+      dirPath: path,
+      success(res) {
+        resolve(res.files)
+      },
+      fail(err) {
+        reject(err)
+      }
+    })
+  })
+}
+
+// 获取文件夹大小
+export const getFolderSize = (path: string) => {
+  return new Promise(async (resolve, reject) => {
+    const files = await getFolderFiles(path)
+  })
+}
