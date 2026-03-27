@@ -45,6 +45,8 @@ export type IGroupSong = {
 export type ISongItem = {
 	name : string;
 	author : string;
+	namePinYin ?: string;
+	authorPinYin ?: string;
 	id : string;
 	ism ?: string;
 	pickCode : string;

@@ -46,11 +46,7 @@
 			return;
 		}
 		const res = await getFolderInfo(currentDir.fid, 1);
-		if (res != null) {
-			currentDir.children = res;
-		} else {
-			currentDir.children = []
-		}
+		currentDir.children = res;
 		currentPid.value.push({ fid: currentDir.fid, name: currentDir.fn } as IPathStack);
 	};
 
@@ -72,9 +68,7 @@
 	// 初始化数据
 	const initData = async () => {
 		const root = await getFolderInfo('0', 1);
-		if (root != null) {
-			dirTreeList.value = root;
-		}
+		dirTreeList.value = root;
 	};
 	initData();
 </script>

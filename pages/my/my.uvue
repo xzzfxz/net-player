@@ -4,6 +4,19 @@
 	import { openSchema } from '@/uni_modules/uts-openSchema'
 	import { mainStore, setRedirectUri } from '@/store'
 	import { getRefreshToken } from '@/utils'
+	import { getFolderSize, removeFolder } from "@/utils/file.uts"
+	import { Download_Dir } from "@/const"
+
+	const cacheSize = ref('0.00M')
+
+	const initData = async () => {
+		const size = await getFolderSize(Download_Dir)
+		if (size.toFloat() > 1000) {
+			cacheSize.value = (size.toFloat() / 1024).toFixed(2) + 'G'
+		} else {
+			cacheSize.value = size + 'M'
+		}
+	}
 
 	// 登录
 	const handleLogin = () => {
@@ -20,17 +33,28 @@
 		await getRefreshToken(true)
 	}
 
+	// 删除文件夹
+	const handleRemoveFolder = async () => {
+		await removeFolder(Download_Dir)
+		mainStore.songLocalPath = {} as UTSJSONObject
+		initData()
+	}
+
 	// 清除缓存
 	const handleClearCache = () => {
 		uni.showModal({
 			content: "确定要清除缓存?",
-			success: (res) => {
+			success(res) {
 				if (res.confirm) {
-					console.log("点击了确认")
+					handleRemoveFolder()
 				}
 			}
 		})
 	}
+
+	onShow(() => {
+		initData()
+	})
 </script>
 
 <template>
@@ -42,7 +66,7 @@
 				<text class="login-status" v-if="mainStore.accessToken">(已登录)</text>
 			</button>
 			<button class="login-btn" @click="handleRefreshToken">刷新登录状态</button>
-			<button class="login-btn warn" type="warn" @click="handleClearCache">清除缓存</button>
+			<button class="login-btn warn" type="warn" @click="handleClearCache">清除缓存({{cacheSize}})</button>
 		</view>
 	</view>
 </template>

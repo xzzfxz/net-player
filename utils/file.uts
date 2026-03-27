@@ -1,23 +1,80 @@
 export const fsManager = uni.getFileSystemManager();
 
+// 判断路径是否存在
+export const isPathExist = (path : string) : Promise<boolean> => {
+	return new Promise(resolve => {
+		fsManager.access({
+			path: path,
+			success() {
+				resolve(true)
+			},
+			fail() {
+				resolve(false)
+			}
+		})
+	})
+}
+
 // 读取文件夹，并返回文件列表
-export const getFolderFiles = (path: string) => {
-  return new Promise((resolve, reject) => {
-    fsManager.readdir({
-      dirPath: path,
-      success(res) {
-        resolve(res.files)
-      },
-      fail(err) {
-        reject(err)
-      }
-    })
-  })
+export const getFolderFiles = (path : string) : Promise<string[]> => {
+	return new Promise((resolve, reject) => {
+		fsManager.readdir({
+			dirPath: path,
+			success(res) {
+				resolve(res.files)
+			},
+			fail(err) {
+				reject(err)
+			}
+		})
+	})
 }
 
 // 获取文件夹大小
-export const getFolderSize = (path: string) => {
-  return new Promise(async (resolve, reject) => {
-    const files = await getFolderFiles(path)
-  })
+export const getFolderSize = async (path : string) : Promise<string> => {
+	const isExist = await isPathExist(path)
+	if (!isExist) {
+		return "0.00"
+	}
+	return new Promise(resolve => {
+		fsManager.stat({
+			path: path,
+			recursive: true,
+			success(res) {
+				let totalSize = 0;
+				res.stats.forEach((item) => {
+					const fileInfo = item.stats;
+					if (fileInfo.mIsFile) {
+						totalSize += fileInfo.size
+					}
+				})
+				const size = (totalSize / 1024 / 1024).toFixed(2)
+				resolve(size);
+			},
+			fail(err) {
+				console.log("获取文件夹大小失败", err)
+				resolve("0.00")
+			}
+		})
+	})
+}
+
+// 删除文件夹
+export const removeFolder = async (path : string) : Promise<boolean> => {
+	const isExist = await isPathExist(path)
+	if (!isExist) {
+		return true
+	}
+	return new Promise((resolve, reject) => {
+		fsManager.rmdir({
+			dirPath: path,
+			recursive: true,
+			success() {
+				resolve(true)
+			},
+			fail(err) {
+				reject(err)
+			}
+		})
+	})
 }

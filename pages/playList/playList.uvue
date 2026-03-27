@@ -18,6 +18,18 @@
 	const currentSongList = ref<ISongItem[]>([])
 	const timeOut = ref(0)
 
+	function loadDataByPage(offset: number, list: ISongItem[]) {
+		let endIndex = offset + 100;
+		currentSongList.value = list.slice(0, endIndex)
+		if (endIndex > list.length) {
+			return;
+		}
+		endIndex += 300
+		setTimeout(() => {
+			loadDataByPage(endIndex, list)
+		}, 200)
+	}
+
 	const handleSetList = () => {
 		if (timeOut.value != 0) {
 			clearTimeout(timeOut.value)
@@ -29,19 +41,20 @@
 			if (filterValue.value != "") {
 				const lowerInput = filterValue.value.toLowerCase();
 				lastList = list.filter(item => {
-					const lowerName = item.name.toLowerCase() ?? '';
-					const lowerAuthor = item.author.toLowerCase() ?? '';
+					const lowerName = item.namePinYin as string;
+					const lowerAuthor = item.authorPinYin as string;
 					return lowerName.includes(lowerInput) || lowerAuthor.includes(lowerInput)
 				})
 			}
-			if (lastList.length > 100) {
-				currentSongList.value = lastList.slice(0, 100)
-				setTimeout(() => {
-					currentSongList.value = lastList
-				}, 500)
-			} else {
-				currentSongList.value = lastList
-			}
+			loadDataByPage(0, lastList)
+			// if (lastList.length > 100) {
+			// 	currentSongList.value = lastList.slice(0, 100)
+			// 	setTimeout(() => {
+			// 		currentSongList.value = lastList
+			// 	}, 500)
+			// } else {
+			// 	currentSongList.value = lastList
+			// }
 		}, 100)
 	}
 
@@ -107,7 +120,7 @@
 		showPathDialog.value = false;
 		const lastPath = pathArray[pathArray.length - 1];
 		const path = pathArray.map(item => item.name).join('/');
-		groupInfo.value = { ...groupInfo.value, path, id: lastPath.fid };
+		groupInfo.value = { ...groupInfo.value, path, id: lastPath.fid as string } as IGroupItem;
 		handleUpdateGroupInfo(groupInfo.value);
 		// 获取文件列表
 		handleLoadData(0);
@@ -135,7 +148,7 @@
 		const name = options["name"] ?? "";
 		const path = options["path"] ?? "";
 		const id = options["id"] ?? "";
-		groupInfo.value = { name, path, id };
+		groupInfo.value = { name, path, id } as IGroupItem;
 		handleSetList()
 	})
 </script>
@@ -167,6 +180,9 @@
 		<view class="float-view">
 			<view class="aim-button up-button flex-center" hover-class="aim-hover" @click="handleScrollToView(0)">
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.up"></Icon>
+			</view>
+			<view class="aim-button up-button flex-center" hover-class="aim-hover" @click="handleScrollToView(currentSongList.length - 1)">
+				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.down"></Icon>
 			</view>
 			<view class="aim-button flex-center" hover-class="aim-hover">
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.aim"></Icon>
@@ -239,16 +255,11 @@
 			width: 50px;
 			height: 50px;
 			padding: 0;
-			border-radius: 50%;
+			border-radius: 25px;
 			background-color: #fff;
 
 			&.up-button {
 				margin-bottom: 10px;
-
-				.aim-icon {
-					position: relative;
-					top: -2px;
-				}
 			}
 		}
 

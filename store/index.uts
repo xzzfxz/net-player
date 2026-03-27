@@ -90,6 +90,10 @@ export const setTokenInfo = (info : UTSJSONObject) => {
 // 设置分组对应的歌曲列表
 export const setGroupSongMap = (groupName : string, songList : ISongItem[], isAppend : boolean) => {
 	const preArray = mainStore.groupSongArray.find(item => item.groupName === groupName);
+	songList.forEach(item => {
+		item.authorPinYin = item.author?.toLowerCase() ?? '';
+		item.namePinYin = item.name?.toLowerCase() ?? '';
+	})
 	if (preArray != null) {
 		// 已保存过该分组
 		if (isAppend) {

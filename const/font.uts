@@ -12,5 +12,6 @@ export const Font_Info = {
 	loop: '\ue61f',
 	delete: '\ue61d', // 👈 1. 修改为 \u 格式  2. 补上逗号
 	aim: '\ue67d',
-	up: '\ued4f'
+	up: '\ue76c',
+	down: '\ue76a'
 }

@@ -63,10 +63,8 @@ export const handleAppLaunchParams = async (options : OnShowOptions) => {
 
 // 获取refreshToken
 export const getRefreshToken = async (force : boolean) => {
-	if (!force) {
-		if (mainStore.refreshToken == "" || mainStore.expiresIn > dayjs().unix()) {
-			return;
-		}
+	if (mainStore.refreshToken == "") {
+		return;
 	}
 	try {
 		const res = await postRefreshToken(mainStore.refreshToken)
@@ -78,6 +76,26 @@ export const getRefreshToken = async (force : boolean) => {
 		console.log("刷新token错误：", err)
 	}
 };
+
+// 定时检查token是否过期
+let checkTokenTimeout = 0;
+export function checkToken() {
+	if (checkTokenTimeout != 0) {
+		clearTimeout(checkTokenTimeout)
+		checkTokenTimeout = 0
+	}
+	checkTokenTimeout = setTimeout(() => {
+		const timestamp = dayjs().unix();
+		const dis = 60 * 10
+		if (mainStore.expiresIn <= timestamp + dis) {
+			// 提前10分钟刷新
+			getRefreshToken(false)
+		}
+		checkToken()
+		// 10分钟
+	}, 1000 * 60 * 10)
+}
+// export checkToken
 
 /**
  * @description: 获取文件(夹)信息
@@ -110,7 +128,6 @@ export const getFolderInfo = async (cid : string, showDir : number) : Promise<ID
 export const getFileUrl = async (id: string, pickCode: string): Promise<string> => {
 	try {
 		const res = await fetchFileUrl(pickCode);
-		console.log(res, "=======")
 		const fileInfo = res[id] as UTSJSONObject
 		const urlInfo = fileInfo["url"] as UTSJSONObject
 		const url = urlInfo["url"] ?? ""
@@ -120,10 +137,4 @@ export const getFileUrl = async (id: string, pickCode: string): Promise<string> 
 		console.log("获取文件url失败", err)
 		return ""
 	}
-  
-  // if (!res.data) {
-  //   return;
-  // }
-  // const obj = res.data[id];
-  // mainStore.setFileUrlInfo(id, obj.url.url);
 };
