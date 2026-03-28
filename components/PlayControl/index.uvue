@@ -1,6 +1,9 @@
 <script setup lang="uts">
 	import Icon from '@/components/Icon/index.uvue'
 	import { Font_Info } from '@/const/font'
+	import { mainStore, setPlayMode } from '@/store';
+	import {playStore} from "@/store/play.uts"
+	import { handlePlayPre, handlePause, handlePlay, handlePlayNext } from "@/utils/playAudio.uts"
 
 	// 跳转到播放详情
 	const handleToDetail = () => {
@@ -8,29 +11,55 @@
 			url: '/pages/playDetail/playDetail'
 		})
 	}
+
+	// 上一曲
+	const handleToPlayPre = () => {
+		handlePlayPre()
+	}
+
+	// 开始/暂停
+	const handlePlayPause = () => {
+		if (playStore.isPlaying) {
+			// 暂停
+			handlePause()
+		} else {
+			// 开始
+			handlePlay()
+		}
+	}
+
+	// 下一曲
+	const handleToPlayNext = () => {
+		handlePlayNext()
+	}
+
+	// 切换播放模式
+	const handleChangePlayMode = () => {
+		setPlayMode()
+	}
 </script>
 
 <template>
 	<view class="play-container">
 		<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png" @click="handleToDetail"></image>
 		<view class="info-container">
-			<text class="song-name ellipsis">歌曲名称歌曲名称歌曲名称歌曲名称歌曲名称歌曲名称歌曲名称歌曲名称</text>
-			<text class="song-artist ellipsis">歌手</text>
+			<text class="song-name ellipsis">{{playStore.currentSong?.name}}</text>
+			<text class="song-artist ellipsis">{{playStore.currentSong?.author}}</text>
 		</view>
-		<button class="control-btn">
+		<button class="control-btn" @click="handlePlayPre">
 			<Icon class="control-icon" :name="Font_Info.prePlay"></Icon>
 		</button>
-		<button class="control-btn">
-			<Icon class="control-icon" :name="Font_Info.play"></Icon>
-			<!-- <Icon class="control-icon" :name="Font_Info.pause"></Icon> -->
+		<button class="control-btn" @click="handlePlayPause">
+			<Icon class="control-icon" v-if="playStore.isPlaying" :name="Font_Info.play"></Icon>
+			<Icon class="control-icon" v-else :name="Font_Info.pause"></Icon>
 		</button>
-		<button class="control-btn">
+		<button class="control-btn" @click="handleToPlayNext">
 			<Icon class="control-icon" :name="Font_Info.nextPlay"></Icon>
 		</button>
-		<button class="control-btn">
-			<!-- <Icon class="control-icon" :name="Font_Info.singleLoop"></Icon> -->
-			<!-- <Icon class="control-icon" :name="Font_Info.loop"></Icon> -->
-			<Icon class="control-icon" :name="Font_Info.random"></Icon>
+		<button class="control-btn" @click="handleChangePlayMode">
+			<Icon class="control-icon" v-if="mainStore.playMode == 'random'" :name="Font_Info.random"></Icon>
+			<Icon class="control-icon" v-else-if="mainStore.playMode == 'single'" :name="Font_Info.singleLoop"></Icon>
+			<Icon class="control-icon" v-else :name="Font_Info.loop"></Icon>
 		</button>
 	</view>
 </template>

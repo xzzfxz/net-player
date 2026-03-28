@@ -19,7 +19,8 @@ const getInitialState = () : IMainStore => {
 		expiresIn: 0,
 		// 分组对应的歌曲列表
 		groupSongArray: [],
-		songLocalPath: {}
+		songLocalPath: {},
+		playMode: "list",
 	}
 	if (storedData == null) {
 		return initData
@@ -43,7 +44,13 @@ export const currentPlayList = computed(() => {
 
 // 设置当前分组
 export const setCurrentGroup = (group : IGroupItem) => {
-	mainStore.currentGroup = group
+	if (mainStore.currentGroup == null) {
+		mainStore.currentGroup = group;
+	} else {
+		if (mainStore.currentGroup.name != group.name) {
+			mainStore.currentGroup = group;
+		}
+	}
 }
 
 // 添加分组
@@ -107,6 +114,25 @@ export const setGroupSongMap = (groupName : string, songList : ISongItem[], isAp
 			groupName,
 			songList
 		} as IGroupSong)
+	}
+}
+
+// 记录下载地址
+export const setSongLocalPath = (songId : string, localPath : string) => {
+	const preObj = {...mainStore.songLocalPath};
+	preObj[songId] = localPath;
+	mainStore.songLocalPath = preObj
+}
+
+// 设置播放模式
+export const setPlayMode = () => {
+	// const modeList = ["list", "random", "single"]
+	if (mainStore.playMode == null || mainStore.playMode == "list") {
+		mainStore.playMode = "random"
+	} else if (mainStore.playMode == "random") {
+		mainStore.playMode = "single"
+	} else if (mainStore.playMode == "single") {
+		mainStore.playMode = "list"
 	}
 }
 

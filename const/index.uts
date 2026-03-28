@@ -1,2 +1,10 @@
 // 下载地址
 export const Download_Dir = `${uni.env.CACHE_PATH}/music/`
+
+// emit事件名称
+export const Emit_Name = {
+  // 播放进度更新
+  PLAY_TIME_UPDATE: "playTimeUpdate",
+  // 滚动到播放位置
+  SCROLL_TO_PLAY: "scrollToPlay",
+}

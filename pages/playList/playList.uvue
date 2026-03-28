@@ -3,12 +3,14 @@
 	import SongItem from "./components/songItem.uvue"
 	import PathDialog from "./components/pathDialog.uvue"
 	import { IPathStack, IGroupItem, ISongItem } from '@/types'
-	import { handleUpdateGroupInfo, setGroupSongMap, mainStore } from '@/store'
+	import { handleUpdateGroupInfo, setGroupSongMap, mainStore, setCurrentGroup } from '@/store'
 	import { fetchFolders } from "@/api"
 	import { showToast } from '@/utils'
 	import Icon from '@/components/Icon/index.uvue'
 	import { Font_Info } from '@/const/font'
 	import PlayControl from '@/components/PlayControl/index.uvue'
+	import { Emit_Name } from "@/const"
+	import { playStore } from "@/store/play.uts"
 
 	const filterValue = ref("")
 	const showPathDialog = ref(false)
@@ -66,6 +68,11 @@
 	// 显示选择路径弹窗
 	const handleChagePath = () => {
 		showPathDialog.value = true;
+	}
+
+	// 设置当前分组
+	const handleSetCurrentGroup = () => {
+		setCurrentGroup(groupInfo.value)
 	}
 
 	// 加载数据
@@ -137,6 +144,13 @@
 	const handleScrollToView = (index : number) => {
 		scrollIntoViewId.value = "view_" + currentSongList.value[index].id
 	}
+	// 滚动到播放位置
+	const handleScrollToPlay = (id : string) => {
+		if (id == "") {
+			return;
+		}
+		scrollIntoViewId.value = "view_" + id
+	}
 
 	// 清除过滤
 	const handleClearFilter = () => {
@@ -145,11 +159,15 @@
 
 	// 初始化数据
 	onLoad(options => {
+		uni.$on(Emit_Name.SCROLL_TO_PLAY as string, handleScrollToPlay)
 		const name = options["name"] ?? "";
 		const path = options["path"] ?? "";
 		const id = options["id"] ?? "";
 		groupInfo.value = { name, path, id } as IGroupItem;
 		handleSetList()
+	})
+	onUnload(() => {
+		uni.$off(Emit_Name.SCROLL_TO_PLAY as string, handleScrollToPlay)
 	})
 </script>
 
@@ -170,7 +188,7 @@
 			:scroll-into-view="scrollIntoViewId" @refresherrefresh="handleRefresh()">
 			<list-item class="list-item" v-for="(item, index) in currentSongList" :id="'view_' + item.id"
 				:key="item.id">
-				<SongItem :song="item" :songIndex="index + 1" />
+				<SongItem :song="item" :songIndex="index + 1" @setCurrentGroup="handleSetCurrentGroup" />
 			</list-item>
 		</list-view>
 		<view class="control-container">
@@ -184,7 +202,7 @@
 			<view class="aim-button up-button flex-center" hover-class="aim-hover" @click="handleScrollToView(currentSongList.length - 1)">
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.down"></Icon>
 			</view>
-			<view class="aim-button flex-center" hover-class="aim-hover">
+			<view class="aim-button flex-center" hover-class="aim-hover" @click="handleScrollToPlay(playStore.currentSong?.id ?? '')">
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.aim"></Icon>
 			</view>
 		</view>

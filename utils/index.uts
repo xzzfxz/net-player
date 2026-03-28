@@ -84,13 +84,13 @@ export function checkToken() {
 		clearTimeout(checkTokenTimeout)
 		checkTokenTimeout = 0
 	}
+	const timestamp = dayjs().unix();
+	const dis = 60 * 10
+	if (mainStore.expiresIn <= timestamp + dis) {
+		// 提前10分钟刷新
+		getRefreshToken(false)
+	}
 	checkTokenTimeout = setTimeout(() => {
-		const timestamp = dayjs().unix();
-		const dis = 60 * 10
-		if (mainStore.expiresIn <= timestamp + dis) {
-			// 提前10分钟刷新
-			getRefreshToken(false)
-		}
 		checkToken()
 		// 10分钟
 	}, 1000 * 60 * 10)

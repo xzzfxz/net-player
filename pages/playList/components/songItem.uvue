@@ -1,8 +1,10 @@
 <script setup lang="uts">
 	import type { ISongItem } from "@/types";
-	import {getFileUrl, showToast} from "@/utils"
-	import {Download_Dir} from "@/const"
-	import { mainStore } from "@/store";
+	import { handlePreparePlay } from "@/utils/playAudio";
+	import { handleAddToWaitList } from "@/store/play";
+	import { playStore } from "@/store/play.uts"
+
+	const emit = defineEmits(["setCurrentGroup"])
 
 	const props = defineProps({
 		song: {
@@ -17,38 +19,15 @@
 
 	const songData = props.song as ISongItem
 
-	// 准备播放
-	const handlePlay = async () => {
-		// 先判断本地是否已下载
-		let lastUrl = mainStore.songLocalPath[songData.id]
-		if (lastUrl != null) {
-			// 已下载，直接使用本地url
-			lastUrl = lastUrl as string;
-			return;
-		}
-		// 获取文件下载地址,下载到本地
-		const url = await getFileUrl(songData.id, songData.pickCode);
-		if (url == "") {
-			return;
-		}
-		uni.downloadFile({
-			url: url as string,
-			filePath: Download_Dir,
-			success(result) {
-				console.log("downSuccess", result)
-				lastUrl = result.tempFilePath as string;
-				mainStore.songLocalPath[songData.id] = lastUrl
-			},
-			fail(error) {
-				console.log("下载失败", error)
-				showToast("下载失败", "error")
-			}
-		})
+	// 播放
+	const handlePlay = () => {
+		emit("setCurrentGroup")
+		handlePreparePlay(songData)
 	}
 
 	// 添加到播放列表
 	const handleWaitPlay = () => {
-		console.log("handleWaitPlay")
+		handleAddToWaitList(songData)
 	}
 
 	// 删除
@@ -57,7 +36,7 @@
 
 <template>
 	<l-swipe-cell>
-		<view class="song-container" :class="{selected: props.songIndex == 1}" @click="handlePlay">
+		<view class="song-container" :class="{selected: playStore.currentSong?.id == songData.id}" @click="handlePlay">
 			<view class="num-container flex-center">
 				<text class="num">{{props.songIndex}}</text>
 			</view>

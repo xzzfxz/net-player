@@ -2,10 +2,70 @@
 	import NavigationBar from '@/components/NavigationBar/index.uvue'
 	import Icon from '@/components/Icon/index.uvue'
 	import { Font_Info } from '@/const/font'
+	import { playStore } from "@/store/play.uts"
+	import { mainStore , setPlayMode} from "@/store"
+	import { handlePlayPre, handlePause, handlePlay, handlePlayNext, handleSeek } from "@/utils/playAudio.uts"
+	import {Emit_Name} from "@/const"
+
+	const playedTime = ref(0)
 
 	const handleBack = () => {
 		uni.navigateBack()
 	}
+
+	// 切换播放模式
+	const handleChangePlayMode = () => {
+		setPlayMode()
+	}
+
+	// 上一曲
+	const handleToPlayPre = () => {
+		handlePlayPre()
+	}
+
+	// 开始/暂停
+	const handlePlayPause = () => {
+		if (playStore.isPlaying) {
+			// 暂停
+			handlePause()
+		} else {
+			// 开始
+			handlePlay()
+		}
+	}
+
+	// 下一曲
+	const handleToPlayNext = () => {
+		handlePlayNext()
+	}
+
+	// 手动进度条
+	const handleSliderChange = (e: UniSliderChangeEvent) => {
+		const pos = e.detail.value;
+		handleSeek(pos)
+	}
+
+	// 将时间转换为分钟
+	const formatTimeToMinute = (time : number) => {
+		const minute = Math.floor(time / 60)
+		const second = time % 60
+		// 不到10时要补0
+		const secondStr = second < 10 ? `0${second}` : second
+		const minuteStr = minute < 10 ? `0${minute}` : minute
+		return `${minuteStr}:${secondStr}`
+	}
+
+	// 更新播放时间
+	const handleTimeUpdate = (time: number) => {
+		playedTime.value = time;
+	}
+
+	onLoad(() => {
+		uni.$on(Emit_Name.PLAY_TIME_UPDATE as string, handleTimeUpdate)
+	})
+	onUnload(() => {
+		uni.$off(Emit_Name.PLAY_TIME_UPDATE as string, handleTimeUpdate)
+	})
 </script>
 
 <template>
@@ -14,29 +74,29 @@
 		</NavigationBar>
 		<view class="content-container">
 			<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png"></image>
-			<text class="name">歌曲名称</text>
-			<text class="artist">歌手</text>
+			<text class="name">{{playStore.currentSong?.name}}</text>
+			<text class="artist">{{playStore.currentSong?.author}}</text>
 			<view class="slider-container">
-				<slider activeBackgroundColor="#4ce2e1" foreColor="#4ce2e1" :value="50" :block-size="12"></slider>
+				<slider activeBackgroundColor="#4ce2e1" foreColor="#4ce2e1" :value="playedTime" :max="playStore.currentSong?.timeLong ?? 59" :block-size="12" @change="handleSliderChange"></slider>
 				<view class="time-container">
-					<text class="time-text">0</text>
-					<text class="time-text">100</text>
+					<text class="time-text">{{formatTimeToMinute(playedTime)}}</text>
+					<text class="time-text">{{formatTimeToMinute(playStore.currentSong?.timeLong ?? 0)}}</text>
 				</view>
 			</view>
 			<view class="control-container">
-				<button class="control-btn">
-					<!-- <Icon class="control-icon" :name="Font_Info.singleLoop"></Icon> -->
-					<!-- <Icon class="control-icon" :name="Font_Info.loop"></Icon> -->
-					<Icon class="control-icon" className="selected" :name="Font_Info.random"></Icon>
+				<button class="control-btn" @click="handleChangePlayMode">
+					<Icon class="control-icon" className="selected" v-if="mainStore.playMode == 'random'" :name="Font_Info.random"></Icon>
+					<Icon class="control-icon" className="selected" v-else-if="mainStore.playMode == 'single'" :name="Font_Info.singleLoop"></Icon>
+					<Icon class="control-icon" className="selected" v-else :name="Font_Info.loop"></Icon>
 				</button>
-				<button class="control-btn">
+				<button class="control-btn" @click="handleToPlayPre">
 					<Icon class="control-icon" className="selected" :name="Font_Info.prePlay"></Icon>
 				</button>
-				<button class="control-btn">
-					<Icon class="control-icon" className="selected" :name="Font_Info.play"></Icon>
-					<!-- <Icon class="control-icon" :name="Font_Info.pause"></Icon> -->
+				<button class="control-btn" @click="handlePlayPause">
+					<Icon class="control-icon" className="selected" v-if="playStore.isPlaying" :name="Font_Info.play"></Icon>
+					<Icon class="control-icon" className="selected" v-else :name="Font_Info.pause"></Icon>
 				</button>
-				<button class="control-btn">
+				<button class="control-btn" @click="handleToPlayNext">
 					<Icon class="control-icon" className="selected" :name="Font_Info.nextPlay"></Icon>
 				</button>
 			</view>

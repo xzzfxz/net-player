@@ -1,0 +1,42 @@
+import type { IPlayStore } from "@/types/store.uts";
+import type { ISongItem } from "@/types";
+
+// 播放信息
+export const playStore = reactive<IPlayStore>({
+	currentSong: null,
+  isPlaying: false,
+  // 稍后播放列表
+  waitList: [],
+  // 已播放的列表
+  playedList: [],
+})
+
+// 设置当前播放的歌曲
+export const setCurrentSong = (song : ISongItem) => {
+	playStore.currentSong = song
+}
+
+// 播放状态
+export const setIsPlaying = (isPlaying : boolean) => {
+	playStore.isPlaying = isPlaying
+}
+
+// 添加到稍后播放
+export const handleAddToWaitList = (song : ISongItem) => {
+	playStore.waitList.push(song)
+}
+
+// 添加到已播放
+export const handleAddToPlayedList = (song : ISongItem) => {
+	if (playStore.playedList.length <= 0) {
+    playStore.playedList.push(song)
+    return;
+  }
+  const lastSong = playStore.playedList[playStore.playedList.length - 1]
+  if (lastSong.id == song.id) {
+    return;
+  }
+  playStore.playedList.push(song)
+}
+
+	

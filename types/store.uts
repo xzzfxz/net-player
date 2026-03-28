@@ -11,4 +11,13 @@ export type IMainStore = {
 	expiresIn : number,
 	groupSongArray : IGroupSong[],
 	songLocalPath: UTSJSONObject,
+	playMode: "single" | "random" | "list" | null,
+}
+
+// 播放store
+export type IPlayStore = {
+	currentSong: ISongItem | null,
+	isPlaying: boolean,
+	waitList: ISongItem[],
+	playedList: ISongItem[],
 }
