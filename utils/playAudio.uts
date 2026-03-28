@@ -8,84 +8,84 @@ export const audioBgManager = uni.getBackgroundAudioManager();
 
 // 播放中
 audioBgManager.onPlay(() => {
-  setIsPlaying(true)
-  // 添加到播放列表
-  handleAddToPlayedList(playStore.currentSong!)
+	setIsPlaying(true)
+	// 添加到播放列表
+	handleAddToPlayedList(playStore.currentSong!)
 })
 
 // 暂停
 audioBgManager.onPause(() => {
-  setIsPlaying(false)
+	setIsPlaying(false)
 })
 
 // 停止
 audioBgManager.onStop(() => {
-  setIsPlaying(false)
+	setIsPlaying(false)
 })
 
 // 播放结束
 audioBgManager.onEnded(() => {
-  setIsPlaying(false)
-  handlePlayNext()
+	setIsPlaying(false)
+	handlePlayNext()
 })
 
 // 播放错误
 audioBgManager.onError((error) => {
-  setIsPlaying(false)
-  showToast("播放失败", "error")
-  handlePlayNext()
+	setIsPlaying(false)
+	showToast("播放失败", "error")
+	handlePlayNext()
 })
 
 // 播放进度更新
 audioBgManager.onTimeUpdate((res) => {
-  uni.$emit(Emit_Name.PLAY_TIME_UPDATE as string, Math.round(audioBgManager.currentTime))
+	uni.$emit(Emit_Name.PLAY_TIME_UPDATE as string, Math.round(audioBgManager.currentTime))
 })
 
 // 上一曲事件
 audioBgManager.onPrev(() => {
-  // 上一曲
-  handlePlayPre()
+	// 上一曲
+	handlePlayPre()
 })
 
 // 下一曲事件
 audioBgManager.onNext(() => {
-  handlePlayNext()
+	handlePlayNext()
 })
 
 // 改变url并开始播放
-export const startPlayAudio = (src : string, songData: ISongItem) => {
-  uni.$emit(Emit_Name.SCROLL_TO_PLAY as string, songData.id)
-  setCurrentSong(songData)
+export const startPlayAudio = (src : string, songData : ISongItem) => {
+	uni.$emit(Emit_Name.SCROLL_TO_PLAY as string, songData.id)
+	setCurrentSong(songData)
 	audioBgManager.src = src;
-  audioBgManager.title = songData.name;
-  audioBgManager.singer = songData.author;
-  audioBgManager.cache = false;
-  handlePlay()
+	audioBgManager.title = songData.name;
+	audioBgManager.singer = songData.author;
+	audioBgManager.cache = false;
+	handlePlay()
 }
 
 // 播放
 export const handlePlay = () => {
-  if (playStore.currentSong == null) {
-    handlePlayNext()
-    return;
-  }
-  audioBgManager.play()
+	if (playStore.currentSong == null) {
+		handlePlayNext()
+		return;
+	}
+	audioBgManager.play()
 }
 
 // 暂停
 export const handlePause = () => {
-  if (playStore.currentSong == null || !playStore.isPlaying) {
-    return;
-  }
-  audioBgManager.pause()
+	if (playStore.currentSong == null || !playStore.isPlaying) {
+		return;
+	}
+	audioBgManager.pause()
 }
 
 // 跳转到播放位置
-export const handleSeek = (pos: number) => {
-  if (playStore.currentSong == null) {
-    return;
-  }
-  audioBgManager.seek(pos)
+export const handleSeek = (pos : number) => {
+	if (playStore.currentSong == null) {
+		return;
+	}
+	audioBgManager.seek(pos)
 }
 
 // 准备播放
@@ -101,8 +101,8 @@ export const handlePreparePlay = async (songData : ISongItem) => {
 	// 获取文件下载地址,下载到本地
 	const url = await getFileUrl(songData.id, songData.pickCode);
 	if (url == "") {
-    showToast("获取下载url失败", "error")
-    handlePlayNext()
+		showToast("获取下载url失败", "error")
+		handlePlayNext()
 		return;
 	}
 	uni.downloadFile({
@@ -116,59 +116,59 @@ export const handlePreparePlay = async (songData : ISongItem) => {
 		fail(error) {
 			console.log("下载失败", error)
 			showToast("下载失败", "error")
-      handlePlayNext()
+			handlePlayNext()
 		}
 	})
 }
 
 // 上一曲
 export const handlePlayPre = () => {
-  if (playStore.playedList.length <= 0) {
-    // 没有上一曲了，不处理
-    return;
-  }
-  const lastSong = playStore.playedList.pop()!
-  if (lastSong.id == playStore.currentSong?.id) {
-    // 上一曲和当前一样，直接跳转播放进度为0
-    handleSeek(0)
-    return;
-  }
-  handlePreparePlay(lastSong)
+	if (playStore.playedList.length <= 0) {
+		// 没有上一曲了，不处理
+		return;
+	}
+	const lastSong = playStore.playedList.pop()!
+	if (lastSong.id == playStore.currentSong?.id) {
+		// 上一曲和当前一样，直接跳转播放进度为0
+		handleSeek(0)
+		return;
+	}
+	handlePreparePlay(lastSong)
 }
 
 // 下一曲
-export const handlePlayNext = () => {
-  // 先判断是否为单曲循环
-  if (mainStore.playMode == "single") {
-    // 直接设置播放进度为0
-    handleSeek(0)
-    return;
-  }
-  // 是否有待播放列表
-  if (playStore.waitList.length > 0) {
-    const songData = playStore.waitList.shift()!
-    handlePreparePlay(songData)
-    return;
-  }
-  // 顺序播放
-  if (mainStore.playMode == "list") {
-    const index = currentPlayList.value.findIndex(item => item.id == playStore.currentSong?.id)
-    if (index == -1) {
-      return;
-    }
-    let nextIndex = index + 1
-    if (nextIndex >= currentPlayList.value.length) {
-      nextIndex = 0
-    }
-    const songData = currentPlayList.value[nextIndex]
-    handlePreparePlay(songData)
-    return;
-  }
-  // 随机播放
-  if (mainStore.playMode == "random") {
-    let nextIndex = Math.floor(Math.random() * currentPlayList.value.length)
-    const songData = currentPlayList.value[nextIndex]
-    handlePreparePlay(songData)
-    return;
-  }
+export function handlePlayNext () {
+	// 先判断是否为单曲循环
+	if (mainStore.playMode == "single") {
+		// 直接设置播放进度为0
+		handleSeek(0)
+		return;
+	}
+	// 是否有待播放列表
+	if (playStore.waitList.length > 0) {
+		const songData = playStore.waitList.shift()!
+		handlePreparePlay(songData)
+		return;
+	}
+	// 顺序播放
+	if (mainStore.playMode == "list") {
+		const index = currentPlayList.value.findIndex(item => item.id == playStore.currentSong?.id)
+		if (index == -1) {
+			return;
+		}
+		let nextIndex = index + 1
+		if (nextIndex >= currentPlayList.value.length) {
+			nextIndex = 0
+		}
+		const songData = currentPlayList.value[nextIndex]
+		handlePreparePlay(songData)
+		return;
+	}
+	// 随机播放
+	if (mainStore.playMode == "random") {
+		let nextIndex = Math.floor(Math.random() * currentPlayList.value.length)
+		const songData = currentPlayList.value[nextIndex]
+		handlePreparePlay(songData)
+		return;
+	}
 }
