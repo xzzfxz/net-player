@@ -119,7 +119,7 @@ export const setGroupSongMap = (groupName : string, songList : ISongItem[], isAp
 
 // 记录下载地址
 export const setSongLocalPath = (songId : string, localPath : string) => {
-	const preObj = {...mainStore.songLocalPath};
+	const preObj = { ...mainStore.songLocalPath };
 	preObj[songId] = localPath;
 	mainStore.songLocalPath = preObj
 }

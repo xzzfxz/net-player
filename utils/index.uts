@@ -125,7 +125,7 @@ export const getFolderInfo = async (cid : string, showDir : number) : Promise<ID
  * @param {string} pickCode
  * @return {*}
  */
-export const getFileUrl = async (id: string, pickCode: string): Promise<string> => {
+export const getFileUrl = async (id : string, pickCode : string) : Promise<string> => {
 	try {
 		const res = await fetchFileUrl(pickCode);
 		const fileInfo = res[id] as UTSJSONObject

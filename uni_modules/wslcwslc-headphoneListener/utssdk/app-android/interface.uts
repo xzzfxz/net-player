@@ -1,5 +1,5 @@
 
-// 蓝牙耳机断开连接
-export type IConnectionFunc = () => void
+// 蓝牙耳机连接状态
+export type IConnectionFunc = (isConnect : boolean) => void
 // 媒体按键触发
 export type IMediaFunc = (type: string) => void;

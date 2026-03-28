@@ -2,7 +2,7 @@
 	import Icon from '@/components/Icon/index.uvue'
 	import { Font_Info } from '@/const/font'
 	import { mainStore, setPlayMode } from '@/store';
-	import {playStore} from "@/store/play.uts"
+	import { playStore } from "@/store/play.uts"
 	import { handlePlayPre, handlePause, handlePlay, handlePlayNext } from "@/utils/playAudio.uts"
 
 	// 跳转到播放详情

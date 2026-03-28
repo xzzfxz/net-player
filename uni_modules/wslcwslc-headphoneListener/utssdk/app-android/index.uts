@@ -4,7 +4,7 @@ import Context from "android.content.Context"
 import AudioManager from 'android.media.AudioManager';
 import AudioDeviceCallback from 'android.media.AudioDeviceCallback';
 import { MedialCallback, DeviceCallback } from "./receiver.uts"
-import { IConnectionFunc } from "./interface.uts"
+import type { IConnectionFunc } from "./interface.uts"
 
 let mSession : MediaSession | null = null;
 let audioManager : AudioManager | null = null;
@@ -26,7 +26,7 @@ export const startConnectionListen = (callback : IConnectionFunc) => {
 	const context = UTSAndroid.getAppContext();
 	if (context == null) return;
 	audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager;
-	deviceCallback = new DeviceCallback()
+	deviceCallback = new DeviceCallback(callback)
 	audioManager?.registerAudioDeviceCallback(deviceCallback, null);
 	console.log("监听连接状态......")
 }

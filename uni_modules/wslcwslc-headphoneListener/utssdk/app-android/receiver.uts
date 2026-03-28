@@ -5,23 +5,37 @@ import KeyEvent from "android.view.KeyEvent";
 import MediaSession from "android.media.session.MediaSession";
 import AudioDeviceCallback from 'android.media.AudioDeviceCallback';
 import AudioDeviceInfo from 'android.media.AudioDeviceInfo';
+import type { IConnectionFunc } from './interface.uts';
 
 // 连接状态
 export class DeviceCallback extends AudioDeviceCallback {
-	constructor() {
+	callabck : IConnectionFunc
+	
+	private isBluetoothHeadsetConnected: boolean = false;
+
+	constructor(callback : IConnectionFunc) {
 		super()
+		this.callabck = callback
 	}
 	
 	override onAudioDevicesAdded(addedDevices: kotlin.Array<AudioDeviceInfo>): void {
 		// 连接成功
-		console.log("蓝牙连接成功")
-		console.log(addedDevices)
+		for (const device of addedDevices) {
+			if (device.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) {
+				console.log("蓝牙连接成功")
+				this.callabck(true)
+			}
+		}
 	}
 
 	override onAudioDevicesRemoved(removedDevices :  kotlin.Array<AudioDeviceInfo>) {
 		// 断开连接
-		console.log("断开连接")
-		console.log(removedDevices)
+		for (const device of removedDevices) {
+			if (device.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) {
+				console.log("蓝牙断开连接")
+				this.callabck(false)
+			}
+		}
 	}
 }
 

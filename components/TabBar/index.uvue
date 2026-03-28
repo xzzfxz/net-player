@@ -17,9 +17,9 @@
 <template>
 	<view class="safe-area-bottom">
 		<view class="tabbar-container">
-		<TabBarItem v-for="item in tabList" :key="item.id" :data="item" :selected="mainStore.currentTab == item.id"
-			@click="changeTab(item.id)"></TabBarItem>
-	</view>
+			<TabBarItem v-for="item in tabList" :key="item.id" :data="item" :selected="mainStore.currentTab == item.id"
+				@click="changeTab(item.id)"></TabBarItem>
+		</view>
 	</view>
 </template>
 
@@ -27,10 +27,12 @@
 	.safe-area-bottom {
 		background-color: $navBgColor;
 	}
+
 	.tabbar-container {
 		height: 50px;
 		padding: 0 10px;
-		box-sizing: border-box;;
+		box-sizing: border-box;
+		;
 		display: flex;
 		flex-direction: row;
 		align-items: center;

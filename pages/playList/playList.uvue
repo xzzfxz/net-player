@@ -20,7 +20,7 @@
 	const currentSongList = ref<ISongItem[]>([])
 	const timeOut = ref(0)
 
-	function loadDataByPage(offset: number, list: ISongItem[]) {
+	function loadDataByPage(offset : number, list : ISongItem[]) {
 		let endIndex = offset + 100;
 		currentSongList.value = list.slice(0, endIndex)
 		if (endIndex > list.length) {
@@ -199,10 +199,12 @@
 			<view class="aim-button up-button flex-center" hover-class="aim-hover" @click="handleScrollToView(0)">
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.up"></Icon>
 			</view>
-			<view class="aim-button up-button flex-center" hover-class="aim-hover" @click="handleScrollToView(currentSongList.length - 1)">
+			<view class="aim-button up-button flex-center" hover-class="aim-hover"
+				@click="handleScrollToView(currentSongList.length - 1)">
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.down"></Icon>
 			</view>
-			<view class="aim-button flex-center" hover-class="aim-hover" @click="handleScrollToPlay(playStore.currentSong?.id ?? '')">
+			<view class="aim-button flex-center" hover-class="aim-hover"
+				@click="handleScrollToPlay(playStore.currentSong?.id ?? '')">
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.aim"></Icon>
 			</view>
 		</view>

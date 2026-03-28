@@ -74,6 +74,9 @@ export const handlePlay = () => {
 
 // 暂停
 export const handlePause = () => {
+  if (playStore.currentSong == null || !playStore.isPlaying) {
+    return;
+  }
   audioBgManager.pause()
 }
 

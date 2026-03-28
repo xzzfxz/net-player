@@ -16,7 +16,6 @@ class Request {
 				'Content-Type': 'application/x-www-form-urlencoded',
 				'Authorization': token
 			};
-			console.log(data, "############")
 			uni.request({
 				url,
 				method,
@@ -26,7 +25,6 @@ class Request {
 					// 2. 响应拦截：根据状态码处理
 					if (res.statusCode == 200) {
 						const result = res.data as UTSJSONObject;
-						console.log(result, '$$$$$$$$$$$$')
 						if (result["code"] == 0) {
 							// 成功：返回数据体
 							resolve(result["data"] as T);

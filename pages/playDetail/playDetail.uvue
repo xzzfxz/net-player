@@ -3,9 +3,9 @@
 	import Icon from '@/components/Icon/index.uvue'
 	import { Font_Info } from '@/const/font'
 	import { playStore } from "@/store/play.uts"
-	import { mainStore , setPlayMode} from "@/store"
+	import { mainStore, setPlayMode } from "@/store"
 	import { handlePlayPre, handlePause, handlePlay, handlePlayNext, handleSeek } from "@/utils/playAudio.uts"
-	import {Emit_Name} from "@/const"
+	import { Emit_Name } from "@/const"
 
 	const playedTime = ref(0)
 
@@ -40,7 +40,7 @@
 	}
 
 	// 手动进度条
-	const handleSliderChange = (e: UniSliderChangeEvent) => {
+	const handleSliderChange = (e : UniSliderChangeEvent) => {
 		const pos = e.detail.value;
 		handleSeek(pos)
 	}
@@ -56,7 +56,7 @@
 	}
 
 	// 更新播放时间
-	const handleTimeUpdate = (time: number) => {
+	const handleTimeUpdate = (time : number) => {
 		playedTime.value = time;
 	}
 
@@ -77,7 +77,8 @@
 			<text class="name">{{playStore.currentSong?.name}}</text>
 			<text class="artist">{{playStore.currentSong?.author}}</text>
 			<view class="slider-container">
-				<slider activeBackgroundColor="#4ce2e1" foreColor="#4ce2e1" :value="playedTime" :max="playStore.currentSong?.timeLong ?? 59" :block-size="12" @change="handleSliderChange"></slider>
+				<slider activeBackgroundColor="#4ce2e1" foreColor="#4ce2e1" :value="playedTime"
+					:max="playStore.currentSong?.timeLong ?? 59" :block-size="12" @change="handleSliderChange"></slider>
 				<view class="time-container">
 					<text class="time-text">{{formatTimeToMinute(playedTime)}}</text>
 					<text class="time-text">{{formatTimeToMinute(playStore.currentSong?.timeLong ?? 0)}}</text>
@@ -85,15 +86,18 @@
 			</view>
 			<view class="control-container">
 				<button class="control-btn" @click="handleChangePlayMode">
-					<Icon class="control-icon" className="selected" v-if="mainStore.playMode == 'random'" :name="Font_Info.random"></Icon>
-					<Icon class="control-icon" className="selected" v-else-if="mainStore.playMode == 'single'" :name="Font_Info.singleLoop"></Icon>
+					<Icon class="control-icon" className="selected" v-if="mainStore.playMode == 'random'"
+						:name="Font_Info.random"></Icon>
+					<Icon class="control-icon" className="selected" v-else-if="mainStore.playMode == 'single'"
+						:name="Font_Info.singleLoop"></Icon>
 					<Icon class="control-icon" className="selected" v-else :name="Font_Info.loop"></Icon>
 				</button>
 				<button class="control-btn" @click="handleToPlayPre">
 					<Icon class="control-icon" className="selected" :name="Font_Info.prePlay"></Icon>
 				</button>
 				<button class="control-btn" @click="handlePlayPause">
-					<Icon class="control-icon" className="selected" v-if="playStore.isPlaying" :name="Font_Info.play"></Icon>
+					<Icon class="control-icon" className="selected" v-if="playStore.isPlaying" :name="Font_Info.play">
+					</Icon>
 					<Icon class="control-icon" className="selected" v-else :name="Font_Info.pause"></Icon>
 				</button>
 				<button class="control-btn" @click="handleToPlayNext">

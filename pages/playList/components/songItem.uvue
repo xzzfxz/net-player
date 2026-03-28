@@ -31,7 +31,7 @@
 	}
 
 	// 删除
-	const handleDelete = () => {}
+	const handleDelete = () => { }
 </script>
 
 <template>
@@ -40,7 +40,8 @@
 			<view class="num-container flex-center">
 				<text class="num">{{props.songIndex}}</text>
 			</view>
-			<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png" @click.stop="handleWaitPlay"></image>
+			<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png" @click.stop="handleWaitPlay">
+			</image>
 			<view class="song-info">
 				<text class="song-name ellipsis">{{songData.name}}</text>
 				<text class="song-artist ellipsis">{{songData.author}}</text>
