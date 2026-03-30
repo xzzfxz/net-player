@@ -2,7 +2,7 @@ import type { ISongItem } from "@/types";
 import { getFileUrl, showToast } from "@/utils"
 import { Download_Dir, Emit_Name } from "@/const"
 import { mainStore, setSongLocalPath, currentPlayList } from "@/store";
-import { playStore, setIsPlaying, setCurrentSong, handleAddToPlayedList } from "@/store/play";
+import { playStore, setIsPlaying, setCurrentSong, handleAddToPlayedList, setAutoScrollToPlay } from "@/store/play";
 
 export const audioBgManager = uni.getBackgroundAudioManager();
 
@@ -89,7 +89,8 @@ export const handleSeek = (pos : number) => {
 }
 
 // 准备播放
-export const handlePreparePlay = async (songData : ISongItem) => {
+export const handlePreparePlay = async (songData : ISongItem, autoScrollPlay : boolean) => {
+	setAutoScrollToPlay(autoScrollPlay)
 	// 先判断本地是否已下载
 	let lastUrl = mainStore.songLocalPath[songData.id]
 	if (lastUrl != null) {
@@ -105,13 +106,13 @@ export const handlePreparePlay = async (songData : ISongItem) => {
 		handlePlayNext()
 		return;
 	}
+	startPlayAudio(url, songData)
 	uni.downloadFile({
 		url: url as string,
 		filePath: Download_Dir,
 		success(result) {
 			lastUrl = result.tempFilePath as string;
 			setSongLocalPath(songData.id, lastUrl)
-			startPlayAudio(lastUrl, songData)
 		},
 		fail(error) {
 			console.log("下载失败", error)
@@ -129,25 +130,26 @@ export const handlePlayPre = () => {
 	}
 	const lastSong = playStore.playedList.pop()!
 	if (lastSong.id == playStore.currentSong?.id) {
-		// 上一曲和当前一样，直接跳转播放进度为0
-		handleSeek(0)
+		// 上一曲和当前一样，重新播放
+		handlePreparePlay(playStore.currentSong!, true)
 		return;
 	}
-	handlePreparePlay(lastSong)
+	handlePreparePlay(lastSong, true)
 }
 
 // 下一曲
 export function handlePlayNext () {
 	// 先判断是否为单曲循环
 	if (mainStore.playMode == "single") {
-		// 直接设置播放进度为0
-		handleSeek(0)
-		return;
+		if (playStore.currentSong != null) {
+			handlePreparePlay(playStore.currentSong!, true)
+			return;
+		}
 	}
 	// 是否有待播放列表
 	if (playStore.waitList.length > 0) {
 		const songData = playStore.waitList.shift()!
-		handlePreparePlay(songData)
+		handlePreparePlay(songData, true)
 		return;
 	}
 	// 顺序播放
@@ -161,14 +163,11 @@ export function handlePlayNext () {
 			nextIndex = 0
 		}
 		const songData = currentPlayList.value[nextIndex]
-		handlePreparePlay(songData)
+		handlePreparePlay(songData, true)
 		return;
 	}
 	// 随机播放
-	if (mainStore.playMode == "random") {
-		let nextIndex = Math.floor(Math.random() * currentPlayList.value.length)
-		const songData = currentPlayList.value[nextIndex]
-		handlePreparePlay(songData)
-		return;
-	}
+	let nextIndex = Math.floor(Math.random() * currentPlayList.value.length)
+	const songData = currentPlayList.value[nextIndex]
+	handlePreparePlay(songData, true)
 }

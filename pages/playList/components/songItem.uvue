@@ -22,7 +22,7 @@
 	// 播放
 	const handlePlay = () => {
 		emit("setCurrentGroup")
-		handlePreparePlay(songData)
+		handlePreparePlay(songData, false)
 	}
 
 	// 添加到播放列表
@@ -40,8 +40,9 @@
 			<view class="num-container flex-center">
 				<text class="num">{{props.songIndex}}</text>
 			</view>
-			<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png" @click.stop="handleWaitPlay">
-			</image>
+			<view class="img-con" hover-class="img-active" @click.stop="handleWaitPlay">
+				<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png" />
+			</view>
 			<view class="song-info">
 				<text class="song-name ellipsis">{{songData.name}}</text>
 				<text class="song-artist ellipsis">{{songData.author}}</text>
@@ -82,10 +83,19 @@
 		}
 	}
 
-	.cover {
+	.img-con {
 		width: 40px;
 		height: 40px;
 		margin-left: 4px;
+	}
+
+	.img-active {
+		opacity: 0.7;
+	}
+
+	.cover {
+		width: 40px;
+		height: 40px;
 	}
 
 	.song-info {

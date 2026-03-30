@@ -9,6 +9,8 @@ export const playStore = reactive<IPlayStore>({
 	waitList: [],
 	// 已播放的列表
 	playedList: [],
+	// 播放时是否自动定位到播放歌曲
+	autoScrollToPlay: true,
 })
 
 // 设置当前播放的歌曲
@@ -37,4 +39,9 @@ export const handleAddToPlayedList = (song : ISongItem) => {
 		return;
 	}
 	playStore.playedList.push(song)
+}
+
+// 设置播放时是否自动定位到播放歌曲
+export const setAutoScrollToPlay = (autoScrollToPlay : boolean) => {
+	playStore.autoScrollToPlay = autoScrollToPlay
 }

@@ -149,6 +149,9 @@
 		if (id == "") {
 			return;
 		}
+		if (!playStore.autoScrollToPlay) {
+			return;
+		}
 		scrollIntoViewId.value = "view_" + id
 	}
 

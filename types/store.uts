@@ -20,4 +20,5 @@ export type IPlayStore = {
 	isPlaying : boolean,
 	waitList : ISongItem[],
 	playedList : ISongItem[],
+	autoScrollToPlay : boolean,
 }
