@@ -17,11 +17,11 @@
 	const groupInfo = ref<IGroupItem>({ name: "", path: "", id: "" })
 	const refreshing = ref(false)
 	const scrollIntoViewId = ref("")
-	const currentSongList = ref<ISongItem[]>([])
+	const currentSongList = shallowRef<ISongItem[]>([])
 	const timeOut = ref(0)
 
 	function loadDataByPage(offset : number, list : ISongItem[]) {
-		let endIndex = offset + 50;
+		let endIndex = offset + 30;
 		currentSongList.value = list.slice(0, endIndex)
 		if (endIndex > list.length) {
 			return;
@@ -48,14 +48,6 @@
 				})
 			}
 			loadDataByPage(0, lastList)
-			// if (lastList.length > 100) {
-			// 	currentSongList.value = lastList.slice(0, 100)
-			// 	setTimeout(() => {
-			// 		currentSongList.value = lastList
-			// 	}, 500)
-			// } else {
-			// 	currentSongList.value = lastList
-			// }
 		}, 100)
 	}
 
