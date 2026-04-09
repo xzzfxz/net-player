@@ -21,15 +21,14 @@
 	const timeOut = ref(0)
 
 	function loadDataByPage(offset : number, list : ISongItem[]) {
-		let endIndex = offset + 100;
+		let endIndex = offset + 50;
 		currentSongList.value = list.slice(0, endIndex)
 		if (endIndex > list.length) {
 			return;
 		}
-		endIndex += 300
 		setTimeout(() => {
-			loadDataByPage(endIndex, list)
-		}, 200)
+			currentSongList.value = list;
+		}, 300)
 	}
 
 	const handleSetList = () => {
