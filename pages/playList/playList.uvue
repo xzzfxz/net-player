@@ -136,11 +136,11 @@
 		scrollIntoViewId.value = "view_" + currentSongList.value[index].id
 	}
 	// 滚动到播放位置
-	const handleScrollToPlay = (id : string) => {
+	const handleScrollToPlay = (id : string, force: boolean) => {
 		if (id == "") {
 			return;
 		}
-		if (!playStore.autoScrollToPlay) {
+		if (!playStore.autoScrollToPlay && !force) {
 			return;
 		}
 		scrollIntoViewId.value = "view_" + id
@@ -149,6 +149,7 @@
 	// 清除过滤
 	const handleClearFilter = () => {
 		filterValue.value = ""
+		handleSetList()
 	}
 
 	// 初始化数据
@@ -198,7 +199,7 @@
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.down"></Icon>
 			</view>
 			<view class="aim-button flex-center" hover-class="aim-hover"
-				@click="handleScrollToPlay(playStore.currentSong?.id ?? '')">
+				@click="handleScrollToPlay(playStore.currentSong?.id ?? '', true)">
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.aim"></Icon>
 			</view>
 		</view>

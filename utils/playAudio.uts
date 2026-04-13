@@ -54,7 +54,7 @@ audioBgManager.onNext(() => {
 
 // 改变url并开始播放
 export const startPlayAudio = (src : string, songData : ISongItem) => {
-	uni.$emit(Emit_Name.SCROLL_TO_PLAY as string, songData.id)
+	uni.$emit(Emit_Name.SCROLL_TO_PLAY as string, songData.id, false)
 	setCurrentSong(songData)
 	audioBgManager.src = src;
 	audioBgManager.title = songData.name;

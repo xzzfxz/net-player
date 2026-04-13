@@ -1,0 +1,286 @@
+<script setup lang="uts">
+	import NavigationBar from '@/components/NavigationBar/index.uvue'
+	import SongItem from "./components/songItem.uvue"
+	import PathDialog from "./components/pathDialog.uvue"
+	import { IPathStack, IGroupItem, ISongItem } from '@/types'
+	import { handleUpdateGroupInfo, setGroupSongMap, mainStore, setCurrentGroup } from '@/store'
+	import { fetchFolders } from "@/api"
+	import { showToast } from '@/utils'
+	import Icon from '@/components/Icon/index.uvue'
+	import { Font_Info } from '@/const/font'
+	import PlayControl from '@/components/PlayControl/index.uvue'
+	import { Emit_Name } from "@/const"
+	import { playStore } from "@/store/play.uts"
+
+	const filterValue = ref("")
+	const showPathDialog = ref(false)
+	const groupInfo = ref<IGroupItem>({ name: "", path: "", id: "" })
+	const refreshing = ref(false)
+	const scrollIntoViewId = ref("")
+	const currentSongList = shallowRef<ISongItem[]>([])
+	const timeOut = ref(0)
+
+	function loadDataByPage(offset : number, list : ISongItem[]) {
+		let endIndex = offset + 30;
+		currentSongList.value = list.slice(0, endIndex)
+		if (endIndex > list.length) {
+			return;
+		}
+		setTimeout(() => {
+			currentSongList.value = list;
+		}, 300)
+	}
+
+	const handleSetList = () => {
+		if (timeOut.value != 0) {
+			clearTimeout(timeOut.value)
+			timeOut.value = 0
+		}
+		setTimeout(() => {
+			const list : ISongItem[] = mainStore.groupSongArray.find(item => item.groupName == groupInfo.value.name)?.songList ?? []
+			let lastList = list;
+			if (filterValue.value != "") {
+				const lowerInput = filterValue.value.toLowerCase();
+				lastList = list.filter(item => {
+					const lowerName = item.namePinYin as string;
+					const lowerAuthor = item.authorPinYin as string;
+					return lowerName.includes(lowerInput) || lowerAuthor.includes(lowerInput)
+				})
+			}
+			loadDataByPage(0, lastList)
+		}, 100)
+	}
+
+	// 返回
+	const handleBack = () => {
+		uni.navigateBack()
+	}
+
+	// 显示选择路径弹窗
+	const handleChagePath = () => {
+		showPathDialog.value = true;
+	}
+
+	// 设置当前分组
+	const handleSetCurrentGroup = () => {
+		setCurrentGroup(groupInfo.value)
+	}
+
+	// 加载数据
+	async function handleLoadData(offset : number) {
+		const limit = 1150
+		try {
+			let arr = await fetchFolders({ cid: groupInfo.value.id, show_dir: 0, limit, offset });
+			arr = arr.filter(item => item["fn"] != null)
+			const songList : ISongItem[] = arr.map(item => {
+				const nameArray = (item["fn"] as string).split('-');
+				const author = nameArray.length > 1 ? nameArray[1] : "未知歌手"
+				let ism = item["ism"]
+				if (ism != null) {
+					ism = ism as string;
+				}
+				let star = item["star"]
+				if (star != null) {
+					star = star as string;
+				}
+				let timeLong = item["play_long"];
+				if (timeLong != null) {
+					timeLong = timeLong as number
+				} else {
+					timeLong = 0;
+				}
+				return {
+					name: nameArray[0] as string,
+					author,
+					id: item["fid"] as string,
+					ism,
+					pickCode: item["pc"] as string,
+					star,
+					timeLong
+				} as ISongItem;
+			});
+			setGroupSongMap(groupInfo.value.name, songList, offset > 0)
+			if (songList.length === limit) {
+				handleLoadData(offset + limit);
+			}
+		} catch (err) {
+			console.log("获取文件列表失败", err)
+			showToast("获取文件列表失败", "error")
+			return
+		} finally {
+			// 重新加载数据
+			handleSetList()
+		}
+	};
+
+	// 选定路径
+	const handlePathSure = (pathArray : IPathStack[]) => {
+		showPathDialog.value = false;
+		const lastPath = pathArray[pathArray.length - 1];
+		const path = pathArray.map(item => item.name).join('/');
+		groupInfo.value = { ...groupInfo.value, path, id: lastPath.fid as string } as IGroupItem;
+		handleUpdateGroupInfo(groupInfo.value);
+		// 获取文件列表
+		handleLoadData(0);
+	};
+
+	// 下拉刷新
+	const handleRefresh = async () => {
+		refreshing.value = true
+		await handleLoadData(0)
+		refreshing.value = false
+	}
+
+	// 滚动到顶部
+	const handleScrollToView = (index : number) => {
+		scrollIntoViewId.value = "view_" + currentSongList.value[index].id
+	}
+	// 滚动到播放位置
+	const handleScrollToPlay = (id : string, force: boolean) => {
+		if (id == "") {
+			return;
+		}
+		if (!playStore.autoScrollToPlay && !force) {
+			return;
+		}
+		scrollIntoViewId.value = "view_" + id
+	}
+
+	// 清除过滤
+	const handleClearFilter = () => {
+		filterValue.value = ""
+		handleSetList()
+	}
+
+	// 初始化数据
+	onLoad(options => {
+		uni.$on(Emit_Name.SCROLL_TO_PLAY as string, handleScrollToPlay)
+		const name = options["name"] ?? "";
+		const path = options["path"] ?? "";
+		const id = options["id"] ?? "";
+		groupInfo.value = { name, path, id } as IGroupItem;
+		handleSetList()
+	})
+	onUnload(() => {
+		uni.$off(Emit_Name.SCROLL_TO_PLAY as string, handleScrollToPlay)
+	})
+</script>
+
+<template>
+	<view class="play-container safe-area-bottom">
+		<NavigationBar showLeft showRight title="首页" @leftClick="handleBack" @rightClick="handleChagePath">
+			<template #right>
+				<uni-icons color="#fff" type="folder-add" size="30"></uni-icons>
+			</template>
+		</NavigationBar>
+		<view class="filter-container">
+			<input v-model="filterValue" class="filter-input" placeholder="请输入歌名或歌手" @input="handleSetList"></input>
+			<uni-icons v-if="filterValue" class="filter-icon" color="#ccc" type="close" size="30"
+				@click="handleClearFilter"></uni-icons>
+		</view>
+		<text class="count-text">共{{ currentSongList.length }}首</text>
+		<list-view class="list-container" refresher-enabled="true" :refresher-triggered="refreshing"
+			:scroll-into-view="scrollIntoViewId" @refresherrefresh="handleRefresh()">
+			<list-item class="list-item" v-for="(item, index) in currentSongList" :id="'view_' + item.id"
+				:key="item.id">
+				<SongItem :song="item" :songIndex="index + 1" @setCurrentGroup="handleSetCurrentGroup" />
+			</list-item>
+		</list-view>
+		<view class="control-container">
+			<PlayControl />
+		</view>
+		<PathDialog v-if="showPathDialog" @close="showPathDialog = false" @sure="handlePathSure" />
+		<view class="float-view">
+			<view class="aim-button up-button flex-center" hover-class="aim-hover" @click="handleScrollToView(0)">
+				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.up"></Icon>
+			</view>
+			<view class="aim-button up-button flex-center" hover-class="aim-hover"
+				@click="handleScrollToView(currentSongList.length - 1)">
+				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.down"></Icon>
+			</view>
+			<view class="aim-button flex-center" hover-class="aim-hover"
+				@click="handleScrollToPlay(playStore.currentSong?.id ?? '', true)">
+				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.aim"></Icon>
+			</view>
+		</view>
+	</view>
+</template>
+
+<style scoped lang="scss">
+	.play-container {
+		height: 100%;
+		background-color: $bodyBgColor;
+		display: flex;
+		position: relative;
+	}
+
+	.filter-container {
+		padding: 4px 10px;
+		flex-shrink: 0;
+		position: relative;
+		;
+
+		.filter-input {
+			height: 32px;
+			padding: 0 4px;
+			border: 1px solid $borderColor;
+			border-radius: 4px;
+			color: #fff;
+		}
+
+		.filter-icon {
+			position: absolute;
+			right: 14px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+	}
+
+	.count-text {
+		padding: 4px 10px;
+		color: #ccc;
+		font-size: 12px;
+	}
+
+	.list-container {
+		height: 0;
+		padding: 0 10px;
+		flex-grow: 1;
+
+		.list-item {
+			margin-bottom: 4px;
+		}
+	}
+
+	.control-container {
+		padding-bottom: 20px;
+	}
+
+	.aim-hover {
+		background-color: #ddd;
+	}
+
+	.float-view {
+		display: flex;
+		position: fixed;
+		bottom: 90px;
+		right: 16px;
+
+		.aim-button {
+			width: 50px;
+			height: 50px;
+			padding: 0;
+			border-radius: 25px;
+			background-color: #fff;
+
+			&.up-button {
+				margin-bottom: 10px;
+			}
+		}
+
+		.aim-icon {
+			font-size: 26px;
+			font-weight: 400;
+		}
+	}
+</style>
