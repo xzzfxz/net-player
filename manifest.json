@@ -2,7 +2,7 @@
 	"name": "net-player",
 	"appid": "__UNI__1F1A2E6",
 	"description": "网盘音乐播放器",
-	"versionName": "1.0.0",
+	"versionName": "1.0.3",
 	"versionCode": "100",
 	"uni-app-x": {},
 	/* 快应用特有相关 */
