@@ -74,7 +74,7 @@
 </script>
 
 <template>
-	<page-container :show="showDialog" position="center" :round="true" style="borderRadius: 10px;">
+	<page-container :show="showDialog" position="center" :round="true" @beforeleave="handleCancel">
 		<text class="dialog-title">选择路径</text>
 		<scroll-view class="dialog-container">
 			<view class="folder-item" hover-class="folder-active" @click="handleBack" v-if="currentPid.length > 1">
