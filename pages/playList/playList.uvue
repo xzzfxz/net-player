@@ -267,10 +267,10 @@
 		right: 16px;
 
 		.aim-button {
-			width: 50px;
-			height: 50px;
+			width: 40px;
+			height: 40px;
 			padding: 0;
-			border-radius: 25px;
+			border-radius: 20px;
 			background-color: #fff;
 
 			&.up-button {
@@ -279,7 +279,7 @@
 		}
 
 		.aim-icon {
-			font-size: 26px;
+			font-size: 22px;
 			font-weight: 400;
 		}
 	}
