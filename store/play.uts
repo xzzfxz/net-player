@@ -34,10 +34,6 @@ export const handleAddToPlayedList = (song : ISongItem) => {
 		playStore.playedList.push(song)
 		return;
 	}
-	const lastSong = playStore.playedList[playStore.playedList.length - 1]
-	if (lastSong.id == song.id) {
-		return;
-	}
 	playStore.playedList.push(song)
 }
 

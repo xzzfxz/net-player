@@ -9,8 +9,6 @@ export const audioBgManager = uni.getBackgroundAudioManager();
 // 播放中
 audioBgManager.onPlay(() => {
 	setIsPlaying(true)
-	// 添加到播放列表
-	handleAddToPlayedList(playStore.currentSong!)
 })
 
 // 暂停
@@ -56,6 +54,8 @@ audioBgManager.onNext(() => {
 export const startPlayAudio = (src : string, songData : ISongItem) => {
 	uni.$emit(Emit_Name.SCROLL_TO_PLAY as string, songData.id, false)
 	setCurrentSong(songData)
+	// 添加到播放列表
+	handleAddToPlayedList(songData)
 	audioBgManager.src = src;
 	audioBgManager.title = songData.name;
 	audioBgManager.singer = songData.author;
@@ -124,16 +124,12 @@ export const handlePreparePlay = async (songData : ISongItem, autoScrollPlay : b
 
 // 上一曲
 export const handlePlayPre = () => {
-	if (playStore.playedList.length <= 0) {
+	if (playStore.playedList.length <= 1) {
 		// 没有上一曲了，不处理
 		return;
 	}
+	playStore.playedList.pop()
 	const lastSong = playStore.playedList.pop()!
-	if (lastSong.id == playStore.currentSong?.id) {
-		// 上一曲和当前一样，重新播放
-		handlePreparePlay(playStore.currentSong!, true)
-		return;
-	}
 	handlePreparePlay(lastSong, true)
 }
 
