@@ -1,4 +1,4 @@
-import { fetchTokenByCode, postRefreshToken, fetchFolders, fetchFileUrl } from "@/api";
+import { fetchTokenByCode, postRefreshToken, fetchFolders, fetchFileUrl, postDeleteFile } from "@/api";
 import { mainStore, setTokenInfo } from "@/store";
 import { dayjs } from "@/uni_modules/kux-dayjs"
 import type { IDirTree } from "@/types";
@@ -138,3 +138,20 @@ export const getFileUrl = async (id : string, pickCode : string) : Promise<strin
 		return ""
 	}
 };
+
+/**
+ * @description: 删除文件
+ * @param {string} id
+ * @param {string} parentId
+ * @return {*}
+ */
+export const deleteFile = async (id : string, parentId : string) : Promise<boolean> => {
+	try {
+		await postDeleteFile(id, parentId)
+		return true
+	} catch (err) {
+		showToast("删除失败", "error")
+		console.log("删除文件失败", err)
+		return false
+	}
+}

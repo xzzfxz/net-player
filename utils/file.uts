@@ -78,3 +78,22 @@ export const removeFolder = async (path : string) : Promise<boolean> => {
 		})
 	})
 }
+
+// 删除文件
+export const deleteFile = async (path: string) : Promise<boolean> => {
+	const isExist = await isPathExist(path)
+	if (!isExist) {
+		return true
+	}
+	return new Promise((resolve, reject) => {
+		fsManager.unlink({
+			filePath: path,
+			success() {
+				resolve(true)
+			},
+			fail(err) {
+				reject(err)
+			}
+		})
+	})
+}

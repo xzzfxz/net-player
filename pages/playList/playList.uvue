@@ -3,9 +3,9 @@
 	import SongItem from "./components/songItem.uvue"
 	import PathDialog from "./components/pathDialog.uvue"
 	import { IPathStack, IGroupItem, ISongItem } from '@/types'
-	import { handleUpdateGroupInfo, setGroupSongMap, mainStore, setCurrentGroup } from '@/store'
+	import { handleUpdateGroupInfo, setGroupSongMap, mainStore, setCurrentGroup, handleDeleteGroupSong } from '@/store'
 	import { fetchFolders } from "@/api"
-	import { showToast } from '@/utils'
+	import { showToast, deleteFile } from '@/utils'
 	import Icon from '@/components/Icon/index.uvue'
 	import { Font_Info } from '@/const/font'
 	import PlayControl from '@/components/PlayControl/index.uvue'
@@ -136,7 +136,7 @@
 		scrollIntoViewId.value = "view_" + currentSongList.value[index].id
 	}
 	// 滚动到播放位置
-	const handleScrollToPlay = (id : string, force: boolean) => {
+	const handleScrollToPlay = (id : string, force : boolean) => {
 		if (id == "") {
 			return;
 		}
@@ -150,6 +150,17 @@
 	const handleClearFilter = () => {
 		filterValue.value = ""
 		handleSetList()
+	}
+
+	// 删除
+	const handleDeleteItem = async (songData : ISongItem) => {
+		// 从线上删除
+		const res = await deleteFile(songData.id, groupInfo.value.id)
+		if (res) {
+			showToast('删除成功', 'success')
+			handleDeleteGroupSong(groupInfo.value.name, songData.id)
+			handleSetList()
+		}
 	}
 
 	// 初始化数据
@@ -183,7 +194,8 @@
 			:scroll-into-view="scrollIntoViewId" @refresherrefresh="handleRefresh()">
 			<list-item class="list-item" v-for="(item, index) in currentSongList" :id="'view_' + item.id"
 				:key="item.id">
-				<SongItem :song="item" :songIndex="index + 1" @setCurrentGroup="handleSetCurrentGroup" />
+				<SongItem :song="item" :songIndex="index + 1" @setCurrentGroup="handleSetCurrentGroup"
+					@delete="handleDeleteItem(item)" />
 			</list-item>
 		</list-view>
 		<view class="control-container">

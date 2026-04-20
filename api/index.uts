@@ -28,3 +28,11 @@ export const fetchFileUrl = (pickCode : string) => {
 		pick_code: pickCode,
 	})
 }
+
+// 删除文件
+export const postDeleteFile = (id : string, parentId : string) => {
+	return request.post<any>("https://proapi.115.com/open/ufile/delete", {
+		file_ids: id,
+		parent_id: parentId
+	})
+}

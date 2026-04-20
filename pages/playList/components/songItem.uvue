@@ -3,8 +3,10 @@
 	import { handlePreparePlay } from "@/utils/playAudio";
 	import { handleAddToWaitList } from "@/store/play";
 	import { playStore } from "@/store/play.uts"
+	import { mainStore } from "@/store/index.uts"
+	import { deleteFile } from "@/utils/file.uts"
 
-	const emit = defineEmits(["setCurrentGroup"])
+	const emit = defineEmits(["setCurrentGroup", 'delete'])
 
 	const props = defineProps({
 		song: {
@@ -18,7 +20,7 @@
 	})
 
 	const songData = props.song as ISongItem
-	
+
 	const selected = computed(() => {
 		return playStore.currentSong?.id == songData.id
 	})
@@ -35,7 +37,14 @@
 	}
 
 	// 删除
-	const handleDelete = () => { }
+	const handleDelete = () => {
+		// 删除本地
+		const lastUrl = mainStore.songLocalPath[songData.id]
+		if (lastUrl != null) {
+			deleteFile(lastUrl as string)
+		}
+		emit('delete')
+	}
 </script>
 
 <template>
@@ -97,8 +106,8 @@
 		width: 40px;
 		height: 40px;
 	}
-	
-	
+
+
 
 	.song-info {
 		width: 0;
@@ -113,6 +122,7 @@
 		.singer {
 			font-size: 12px;
 			color: #aaa;
+
 			&.singer-selected {
 				color: #fff;
 			}

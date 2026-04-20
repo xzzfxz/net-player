@@ -120,6 +120,16 @@ export const setGroupSongMap = (groupName : string, songList : ISongItem[], isAp
 		console.log("设置列表出错:", err)
 	}
 }
+// 删除某个分组中的某条数据
+export const handleDeleteGroupSong = (groupName: string, songId: string) => {
+	let groupItem = mainStore.groupSongArray.find(item => item.groupName == groupName);
+	if (groupItem == null) {
+		return;
+	}
+	const list = groupItem.songList.filter(item => item.id != songId)
+	groupItem.songList = list;
+	
+}
 
 // 记录下载地址
 export const setSongLocalPath = (songId : string, localPath : string) => {
