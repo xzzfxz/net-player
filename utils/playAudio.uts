@@ -53,7 +53,6 @@ audioBgManager.onNext(() => {
 // 改变url并开始播放
 export const startPlayAudio = (src : string, songData : ISongItem) => {
 	uni.$emit(Emit_Name.SCROLL_TO_PLAY as string, songData.id, false)
-	setCurrentSong(songData)
 	// 添加到播放列表
 	handleAddToPlayedList(songData)
 	audioBgManager.src = src;
@@ -90,6 +89,7 @@ export const handleSeek = (pos : number) => {
 
 // 准备播放
 export const handlePreparePlay = async (songData : ISongItem, autoScrollPlay : boolean) => {
+	setCurrentSong(songData)
 	setAutoScrollToPlay(autoScrollPlay)
 	// 先判断本地是否已下载
 	let lastUrl = mainStore.songLocalPath[songData.id]
@@ -106,13 +106,13 @@ export const handlePreparePlay = async (songData : ISongItem, autoScrollPlay : b
 		handlePlayNext()
 		return;
 	}
-	startPlayAudio(url, songData)
 	uni.downloadFile({
 		url: url as string,
 		filePath: Download_Dir,
 		success(result) {
 			lastUrl = result.tempFilePath as string;
 			setSongLocalPath(songData.id, lastUrl)
+			startPlayAudio(lastUrl, songData)
 		},
 		fail(error) {
 			console.log("下载失败", error)

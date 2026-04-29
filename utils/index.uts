@@ -155,3 +155,17 @@ export const deleteFile = async (id : string, parentId : string) : Promise<boole
 		return false
 	}
 }
+
+// 判断是否有新版本
+export const hasNewApk = (currentVersion: string, newVersion: string) => {
+	const currentArr = currentVersion.split(".")
+	const newArr = newVersion.split(".")
+	// 取两个版本号的较长长度
+	const maxLength = Math.max(currentArr.length, newArr.length);
+	for (let i = 0; i < maxLength; i++) {
+		if (parseInt(newArr[i]) > parseInt(currentArr[i])) {
+			return true;
+		}
+	}
+	return false;
+}

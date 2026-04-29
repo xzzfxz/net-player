@@ -1,0 +1,88 @@
+<script setup lang="uts">
+	import { Upgrade_Dir } from "@/const/index.uts"
+	import { showToast } from "@/utils/index.uts"
+	import { deleteFile } from "@/utils/file.uts"
+
+	const emit = defineEmits(['close'])
+
+	const props = defineProps({
+		version: {
+			type: String,
+			default: '1.0.0'
+		}
+	})
+
+	const showDialog = ref(true)
+	const currentProgress = ref(0)
+
+	// 关闭
+	const handleCancel = () => {
+		emit('close')
+	}
+
+	// 现在下载安装
+	const handleSure = () => {
+		uni.downloadFile({
+			url: `https://github.com/xzzfxz/net-player/releases/download/${props.version}/${props.version}.apk`,
+			filePath: Upgrade_Dir,
+			success(result) {
+				const appPath = result.tempFilePath as string;
+				uni.installApk({
+					filePath: appPath,
+				})
+				handleCancel()
+			},
+			fail(error) {
+				console.log("下载失败", error)
+				showToast("apk下载失败", "error")
+			}
+		}).onProgressUpdate((progressRes) => {
+			currentProgress.value = progressRes.progress
+		})
+	}
+</script>
+
+<template>
+	<page-container :show="showDialog" position="center" :round="true" overlay-style="pointer-events: none;"
+		@beforeleave="handleCancel">
+		<text class="dialog-title">是否现在升级?</text>
+		<view style="margin-left: 20px;">最新版本：{{props.version}}</view>
+		<view class="progress-container">
+			<progress class="progress" :percent="currentProgress" :stroke-width="3" />
+		</view>
+		<view class="deal-container">
+			<button class="deal-btn" @click="handleCancel">取消</button>
+			<button class="deal-btn" @click="handleSure">确定</button>
+		</view>
+	</page-container>
+</template>
+
+<style lang="scss">
+	.dialog-title {
+		width: 300px;
+		padding: 20px;
+		font-weight: 700;
+		text-align: center;
+	}
+
+	.progress-container {
+		width: 260px;
+		margin: 0 auto;
+		padding-top: 10px;
+		padding-bottom: 20px;
+	}
+
+	.deal-container {
+		width: 300px;
+		margin-top: 20px;
+		display: flex;
+		align-items: center;
+		flex-direction: row;
+
+		.deal-btn {
+			flex: 1;
+			background-color: transparent;
+			border-radius: 0;
+		}
+	}
+</style>

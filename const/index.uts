@@ -1,5 +1,7 @@
 // 下载地址
 export const Download_Dir = `${uni.env.CACHE_PATH}/music/`
+// 更新包下载地址
+export const Upgrade_Dir = `${uni.env.CACHE_PATH}/upgrade/`
 
 // emit事件名称
 export const Emit_Name = {

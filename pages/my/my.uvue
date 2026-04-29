@@ -1,15 +1,22 @@
 <script setup lang="uts">
 	import NavigationBar from '@/components/NavigationBar/index.uvue'
-	import { generateRandomCode } from '@/utils'
+	import { generateRandomCode, showToast } from '@/utils'
 	import { openSchema } from '@/uni_modules/uts-openSchema'
 	import { mainStore, setRedirectUri } from '@/store'
-	import { getRefreshToken } from '@/utils'
+	import { getRefreshToken, hasNewApk } from '@/utils'
 	import { getFolderSize, removeFolder } from "@/utils/file.uts"
 	import { Download_Dir } from "@/const"
+	import UpgradeApp from '@/components/UpgradeApp/index.uvue'
 
 	const cacheSize = ref('0.00M')
+	const currentVersion = ref('1.0.0')
+	const checkLoading = ref(true)
+	const newVersion = ref('1.0.3')
+	const showInstallWindow = ref(false)
 
 	const initData = async () => {
+		const appInfo = uni.getAppBaseInfo()
+		currentVersion.value = appInfo.appVersion as string;
 		const size = await getFolderSize(Download_Dir)
 		if (size.toFloat() > 1000) {
 			cacheSize.value = (size.toFloat() / 1024).toFixed(2) + 'G'
@@ -51,6 +58,27 @@
 			}
 		})
 	}
+	
+	// 检查更新
+	const handleCheckVersion = () => {
+		uni.request({
+			url: 'https://staticweb.lichongukh.workers.dev/upgrade/netPlayer.json',
+			method: 'GET',
+			success: (res) => {
+				const jsonData = res["data"] as UTSJSONObject
+				newVersion.value = jsonData["version"] as string
+				const hasNew = hasNewApk(currentVersion.value, newVersion.value)
+				if (hasNew) {
+					showInstallWindow.value = true;
+				} else {
+					showToast("已是最新版本，无需更新", "success")
+				}
+			},
+			fail: (err) => {
+				console.log('检查失败，请稍后重试', err)
+			}
+		})
+	}
 
 	onShow(() => {
 		initData()
@@ -67,7 +95,12 @@
 			</button>
 			<button class="login-btn" @click="handleRefreshToken">刷新登录状态</button>
 			<button class="login-btn warn" type="warn" @click="handleClearCache">清除缓存({{cacheSize}})</button>
+			<button class="login-btn check" @click="handleCheckVersion">检查更新</button>
 		</view>
+		<view class="version-container">
+			<text class="text">v{{currentVersion}}</text>
+		</view>
+		<UpgradeApp :version="newVersion" v-if="showInstallWindow" @close="showInstallWindow = false" />
 	</view>
 </template>
 
@@ -89,10 +122,25 @@
 			&.warn {
 				background-color: #ff4444;
 			}
+
+			&.check {
+				margin-top: 40px;
+			}
 		}
 
 		.login-status {
 			color: #00c165;
+		}
+	}
+
+	.version-container {
+		position: fixed;
+		bottom: 30px;
+		left: 50%;
+		transform: translateX(-50%);
+
+		.text {
+			color: #ccc;
 		}
 	}
 </style>
