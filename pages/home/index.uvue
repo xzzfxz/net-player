@@ -72,7 +72,8 @@
 			</template>
 		</NavigationBar>
 		<scroll-view class="home-container" @click="handleHideDelete">
-			<view class="group-item failed-group" @tap.stop="handleToDownloadFailed">
+			<view v-if="mainStore.downloadFailedList.length > 0" class="group-item failed-group"
+				@tap.stop="handleToDownloadFailed">
 				<view class="group-title-row">
 					<text class="group-name">下载失败</text>
 					<view class="failed-count flex-center">
