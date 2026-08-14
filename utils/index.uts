@@ -133,7 +133,6 @@ export const getFileUrl = async (id : string, pickCode : string) : Promise<strin
 		const url = urlInfo["url"] ?? ""
 		return url as string;
 	} catch (err) {
-		showToast("获取文件url失败", "error")
 		console.log("获取文件url失败", err)
 		return ""
 	}

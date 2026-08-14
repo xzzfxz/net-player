@@ -2,7 +2,7 @@
 	import NavigationBar from '@/components/NavigationBar/index.uvue'
 	import { generateRandomCode, showToast } from '@/utils'
 	import { openSchema } from '@/uni_modules/uts-openSchema'
-	import { mainStore, setRedirectUri } from '@/store'
+	import { mainStore, setRedirectUri, clearDownloadFailedList } from '@/store'
 	import { getRefreshToken, hasNewApk } from '@/utils'
 	import { getFolderSize, removeFolder } from "@/utils/file.uts"
 	import { Download_Dir } from "@/const"
@@ -42,6 +42,7 @@
 
 	// 删除文件夹
 	const handleRemoveFolder = async () => {
+		clearDownloadFailedList()
 		await removeFolder(Download_Dir)
 		mainStore.songLocalPath = {} as UTSJSONObject
 		initData()

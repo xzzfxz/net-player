@@ -3,7 +3,14 @@
 	import SongItem from "./components/songItem.uvue"
 	import PathDialog from "./components/pathDialog.uvue"
 	import { IPathStack, IGroupItem, ISongItem } from '@/types'
-	import { handleUpdateGroupInfo, setGroupSongMap, mainStore, setCurrentGroup, handleDeleteGroupSong } from '@/store'
+	import {
+		handleUpdateGroupInfo,
+		setGroupSongMap,
+		mainStore,
+		setCurrentGroup,
+		handleDeleteGroupSong,
+		clearDownloadFailedList
+	} from '@/store'
 	import { fetchFolders } from "@/api"
 	import { showToast, deleteFile } from '@/utils'
 	import Icon from '@/components/Icon/index.uvue'
@@ -82,6 +89,9 @@
 	// 加载数据
 	async function handleLoadData(offset : number) {
 		const limit = 1150
+		if (offset == 0) {
+			clearDownloadFailedList()
+		}
 		try {
 			let arr = await fetchFolders({ cid: groupInfo.value.id, show_dir: 0, limit, offset });
 			arr = arr.filter(item => item["fn"] != null)

@@ -1,7 +1,13 @@
 import type { ISongItem } from "@/types";
 import { getFileUrl, showToast } from "@/utils"
 import { Download_Dir, Emit_Name } from "@/const"
-import { mainStore, setSongLocalPath, currentPlayList } from "@/store";
+import {
+	mainStore,
+	setSongLocalPath,
+	currentPlayList,
+	addDownloadFailedSong,
+	removeDownloadFailedSong
+} from "@/store";
 import { playStore, setIsPlaying, setCurrentSong, handleAddToPlayedList, setAutoScrollToPlay } from "@/store/play";
 
 export const audioBgManager = uni.getBackgroundAudioManager();
@@ -86,6 +92,49 @@ export const handleSeek = (pos : number) => {
 	audioBgManager.seek(pos)
 }
 
+// 每次调用都会重新获取下载 URL。所有下载入口共用此方法，保证失败记录状态一致。
+const downloadSong = async (songData : ISongItem) : Promise<string> => {
+	const url = await getFileUrl(songData.id, songData.pickCode)
+	if (url == "") {
+		addDownloadFailedSong(songData)
+		return ""
+	}
+	return new Promise(resolve => {
+		uni.downloadFile({
+			url,
+			filePath: Download_Dir,
+			success(result) {
+				const localPath = result.tempFilePath as string
+				if (result.statusCode < 200 || result.statusCode >= 300 || localPath == "") {
+					console.log("下载响应异常，状态码：", result.statusCode)
+					addDownloadFailedSong(songData)
+					resolve("")
+					return
+				}
+				setSongLocalPath(songData.id, localPath)
+				removeDownloadFailedSong(songData.id)
+				resolve(localPath)
+			},
+			fail(error) {
+				console.log("下载失败", error)
+				addDownloadFailedSong(songData)
+				resolve("")
+			}
+		})
+	})
+}
+
+// 失败列表重试：忽略已有本地路径，强制重新获取 URL 并下载
+export const retryDownloadSong = async (songData : ISongItem) : Promise<boolean> => {
+	const localPath = await downloadSong(songData)
+	if (localPath == "") {
+		showToast("下载失败", "error")
+		return false
+	}
+	showToast("下载成功", "success")
+	return true
+}
+
 // 准备播放
 export const handlePreparePlay = async (songData : ISongItem, autoScrollPlay : boolean) => {
 	setCurrentSong(songData)
@@ -96,34 +145,22 @@ export const handlePreparePlay = async (songData : ISongItem, autoScrollPlay : b
 	if (lastUrl != null) {
 		// 已下载，直接使用本地url
 		lastUrl = lastUrl as string;
+		removeDownloadFailedSong(songData.id)
 		startPlayAudio(lastUrl, songData)
 		return;
 	}
-	// 获取文件下载地址,下载到本地
-	const url = await getFileUrl(songData.id, songData.pickCode);
-	if (url == "") {
-		showToast("获取下载url失败", "error")
-		handlePlayNext()
-		return;
-	}
-	uni.downloadFile({
-		url: url as string,
-		filePath: Download_Dir,
-		success(result) {
-			lastUrl = result.tempFilePath as string;
-			setSongLocalPath(songData.id, lastUrl)
-			if (songData.id == playStore.currentSong?.id) {
-				startPlayAudio(lastUrl, songData)
-			}
-		},
-		fail(error) {
-			console.log("下载失败", error)
-			showToast("下载失败", "error")
-			if (songData.id == playStore.currentSong?.id) {
-				handlePlayNext()
-			}
+	// 获取文件下载地址并下载到本地
+	lastUrl = await downloadSong(songData)
+	if (lastUrl == "") {
+		showToast("下载失败", "error")
+		if (songData.id == playStore.currentSong?.id) {
+			handlePlayNext()
 		}
-	})
+		return
+	}
+	if (songData.id == playStore.currentSong?.id) {
+		startPlayAudio(lastUrl, songData)
+	}
 }
 
 // 上一曲

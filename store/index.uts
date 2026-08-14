@@ -20,6 +20,8 @@ const getInitialState = () : IMainStore => {
 		// 分组对应的歌曲列表
 		groupSongArray: [],
 		songLocalPath: {},
+		// 下载失败歌曲，持久化保存，成功下载或主动清理时删除
+		downloadFailedList: [],
 		playMode: "list",
 	}
 	if (storedData == null) {
@@ -27,7 +29,12 @@ const getInitialState = () : IMainStore => {
 	}
 	const res = JSON.parseObject<IMainStore>(storedData as string)
 	if (res != null) {
-		return { ...initData, ...res }
+		const lastData = { ...initData, ...res } as IMainStore
+		// 兼容升级前保存的 mainStore，其中还没有失败列表字段
+		if (lastData.downloadFailedList == null) {
+			lastData.downloadFailedList = []
+		}
+		return lastData
 	}
 	return initData
 }
@@ -136,6 +143,23 @@ export const setSongLocalPath = (songId : string, localPath : string) => {
 	const preObj = { ...mainStore.songLocalPath };
 	preObj[songId] = localPath;
 	mainStore.songLocalPath = preObj
+}
+
+// 记录下载失败歌曲，同一首歌只保留一条
+export const addDownloadFailedSong = (songData : ISongItem) => {
+	const list = mainStore.downloadFailedList.filter(item => item.id != songData.id)
+	list.push({ ...songData } as ISongItem)
+	mainStore.downloadFailedList = list
+}
+
+// 下载成功后移除对应失败记录
+export const removeDownloadFailedSong = (songId : string) => {
+	mainStore.downloadFailedList = mainStore.downloadFailedList.filter(item => item.id != songId)
+}
+
+// 清空下载失败记录
+export const clearDownloadFailedList = () => {
+	mainStore.downloadFailedList = []
 }
 
 // 设置播放模式

@@ -7,6 +7,14 @@
 
 	const deleteMenuGroupName = ref("")
 
+	// 查看下载失败歌曲
+	const handleToDownloadFailed = () => {
+		deleteMenuGroupName.value = ""
+		uni.navigateTo({
+			url: "/pages/downloadFailed/index"
+		})
+	}
+
 	// 显示添加分组弹窗
 	const handleRightClick = () => {
 		uni.showModal({
@@ -64,6 +72,15 @@
 			</template>
 		</NavigationBar>
 		<scroll-view class="home-container" @click="handleHideDelete">
+			<view class="group-item failed-group" @tap.stop="handleToDownloadFailed">
+				<view class="group-title-row">
+					<text class="group-name">下载失败</text>
+					<view class="failed-count flex-center">
+						<text class="failed-count-text">{{mainStore.downloadFailedList.length}}</text>
+					</view>
+				</view>
+				<text class="group-path">点击查看并重新下载</text>
+			</view>
 			<view class="group-item" v-for="item in mainStore.groupList" :key="item.name"
 				@click.stop="handleToGroupDetail(item)" @longpress.stop="handleLongPress(item)">
 				<text class="group-name">{{ item.name }}</text>
@@ -107,6 +124,30 @@
 
 		.group-path {
 			color: #aaa;
+			font-size: 12px;
+		}
+	}
+
+	.failed-group {
+		border-color: $dangerColor;
+	}
+
+	.group-title-row {
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.failed-count {
+		min-width: 22px;
+		height: 22px;
+		margin-left: 8px;
+		padding: 0 6px;
+		border-radius: 11px;
+		background-color: $dangerColor;
+		box-sizing: border-box;
+
+		.failed-count-text {
+			color: #ffffff;
 			font-size: 12px;
 		}
 	}

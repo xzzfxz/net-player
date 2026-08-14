@@ -11,6 +11,7 @@ export type IMainStore = {
 	expiresIn : number,
 	groupSongArray : IGroupSong[],
 	songLocalPath : UTSJSONObject,
+	downloadFailedList : ISongItem[],
 	playMode : "single" | "random" | "list" | null,
 }
 

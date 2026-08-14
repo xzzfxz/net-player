@@ -1,0 +1,155 @@
+<script setup lang="uts">
+	import NavigationBar from '@/components/NavigationBar/index.uvue'
+	import PlayControl from '@/components/PlayControl/index.uvue'
+	import type { ISongItem } from '@/types'
+	import { mainStore } from '@/store'
+	import { retryDownloadSong } from '@/utils/playAudio.uts'
+	import { LayoutItem } from '@/uni_modules/uni-recycle-view/common/types.uts'
+
+	const retryingSongId = ref("")
+	const failedItemHeight = 58
+	const pageTitle = computed(() => `下载失败（${mainStore.downloadFailedList.length}）`)
+
+	const handleBack = () => {
+		uni.navigateBack()
+	}
+
+	const handleRetry = async (songData : ISongItem) => {
+		if (retryingSongId.value != "") {
+			return
+		}
+		retryingSongId.value = songData.id
+		try {
+			await retryDownloadSong(songData)
+		} finally {
+			retryingSongId.value = ""
+		}
+	}
+</script>
+
+<template>
+	<view class="page-container safe-area-bottom">
+		<NavigationBar showLeft :title="pageTitle" @leftClick="handleBack" />
+		<view class="failed-list-container">
+			<view v-if="mainStore.downloadFailedList.length == 0" class="empty-container flex-center">
+				<text class="empty-text">暂无下载失败的歌曲</text>
+			</view>
+			<uni-recycle-view v-else class="failed-list" :list="mainStore.downloadFailedList"
+				:itemHeight="failedItemHeight">
+				<template v-slot:default="{ layoutItems, items }">
+					<uni-recycle-item class="failed-layout-item" v-for="(item, index) in (items as ISongItem[])"
+						:key="(layoutItems as LayoutItem[])[index].id"
+						:offset="(layoutItems as LayoutItem[])[index].offset">
+						<view class="song-item" hover-class="song-item-hover" @tap="handleRetry(item)">
+							<view class="song-index flex-center">
+								<text class="song-index-text">
+									{{Math.floor((layoutItems as LayoutItem[])[index].offset / failedItemHeight) + 1}}
+								</text>
+							</view>
+							<image class="song-cover" mode="aspectFit" src="@/static/image/default-icon.png" />
+							<view class="song-info">
+								<text class="song-name ellipsis">{{item.name}}</text>
+								<text class="song-author ellipsis">{{item.author}}</text>
+							</view>
+							<text class="retry-text">{{retryingSongId == item.id ? '下载中...' : '点击重试'}}</text>
+						</view>
+					</uni-recycle-item>
+				</template>
+			</uni-recycle-view>
+		</view>
+		<view class="control-container">
+			<PlayControl />
+		</view>
+	</view>
+</template>
+
+<style scoped lang="scss">
+	.page-container {
+		height: 100%;
+		background-color: $bodyBgColor;
+		display: flex;
+	}
+
+	.failed-list-container {
+		height: 0;
+		padding: 8px 10px 0;
+		flex-grow: 1;
+		display: flex;
+	}
+
+	.failed-list {
+		height: 0;
+		flex-grow: 1;
+	}
+
+	.empty-container {
+		height: 160px;
+		flex-grow: 1;
+	}
+
+	.empty-text {
+		color: #aaa;
+		font-size: 14px;
+	}
+
+	.song-item {
+		height: 52px;
+		border: 1px solid $dangerColor;
+		border-radius: 4px;
+		flex-direction: row;
+		align-items: center;
+		box-sizing: border-box;
+	}
+
+	.failed-layout-item {
+		height: 58px;
+		padding-bottom: 6px;
+		box-sizing: border-box;
+	}
+
+	.song-item-hover {
+		opacity: 0.72;
+	}
+
+	.song-index {
+		width: 36px;
+	}
+
+	.song-index-text {
+		color: #eee;
+		font-size: 12px;
+		font-style: italic;
+	}
+
+	.song-cover {
+		width: 40px;
+		height: 40px;
+		margin-left: 4px;
+	}
+
+	.song-info {
+		width: 0;
+		margin-left: 8px;
+		flex-grow: 1;
+	}
+
+	.song-name {
+		color: #fff;
+		font-weight: 400;
+	}
+
+	.song-author {
+		color: #aaa;
+		font-size: 12px;
+	}
+
+	.retry-text {
+		margin: 0 10px;
+		color: $dangerColor;
+		font-size: 12px;
+	}
+
+	.control-container {
+		padding-bottom: 20px;
+	}
+</style>
