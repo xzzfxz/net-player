@@ -152,7 +152,11 @@
 		}
 		const lastIndex = currentSongList.value.length - 1
 		const safeIndex = Math.max(0, Math.min(index, lastIndex))
-		const target = safeIndex * songItemHeight
+		const listElement = uni.getElementById<UniElement>("song-list-viewport")
+		const viewportHeight = listElement?.offsetHeight ?? 0
+		const centeredTarget = safeIndex * songItemHeight - (viewportHeight - songItemHeight) / 2
+		const maxScrollTop = Math.max(0, currentSongList.value.length * songItemHeight - viewportHeight)
+		const target = Math.round(Math.max(0, Math.min(centeredTarget, maxScrollTop)))
 		// 先改变一次数值，确保重复点击同一定位按钮也能触发滚动
 		listScrollTop.value = target == 0 ? 1 : target - 1
 		nextTick(() => {
@@ -227,22 +231,24 @@
 				@click="handleClearFilter"></uni-icons>
 		</view>
 		<text class="count-text">共{{ currentSongList.length }}首</text>
-		<uni-recycle-view class="list-container" :list="currentSongList" :itemHeight="songItemHeight"
-			:scroll-top="listScrollTop" :refresher-enabled="true" :refresher-triggered="refreshing"
-			@refresherrefresh="handleRefresh()">
-			<template v-slot:default="{ layoutItems, items }">
-				<uni-recycle-item class="list-item" v-for="(item, index) in (items as ISongItem[])"
-					:key="(layoutItems as LayoutItem[])[index].id"
-					:offset="(layoutItems as LayoutItem[])[index].offset">
-					<view class="song-click-area" @click.stop="handlePlayItem(item)">
-						<SongItem :song="item"
-							:songIndex="Math.floor((layoutItems as LayoutItem[])[index].offset / songItemHeight) + 1"
-							:showDelete="deleteMenuSongId == item.id" @showDelete="handleShowDelete(item.id)"
-							@hideDelete="handleHideDelete" @delete="handleDeleteItem(item)" />
-					</view>
-				</uni-recycle-item>
-			</template>
-		</uni-recycle-view>
+		<view id="song-list-viewport" class="list-container">
+			<uni-recycle-view class="recycle-list" :list="currentSongList" :itemHeight="songItemHeight"
+				:scroll-top="listScrollTop" :refresher-enabled="true" :refresher-triggered="refreshing"
+				@refresherrefresh="handleRefresh()">
+				<template v-slot:default="{ layoutItems, items }">
+					<uni-recycle-item class="list-item" v-for="(item, index) in (items as ISongItem[])"
+						:key="(layoutItems as LayoutItem[])[index].id"
+						:offset="(layoutItems as LayoutItem[])[index].offset">
+						<view class="song-click-area" @click.stop="handlePlayItem(item)">
+							<SongItem :song="item"
+								:songIndex="Math.floor((layoutItems as LayoutItem[])[index].offset / songItemHeight) + 1"
+								:showDelete="deleteMenuSongId == item.id" @showDelete="handleShowDelete(item.id)"
+								@hideDelete="handleHideDelete" @delete="handleDeleteItem(item)" />
+						</view>
+					</uni-recycle-item>
+				</template>
+			</uni-recycle-view>
+		</view>
 		<view class="control-container">
 			<PlayControl />
 		</view>
@@ -302,6 +308,12 @@
 	.list-container {
 		height: 0;
 		padding: 0 10px;
+		flex-grow: 1;
+		display: flex;
+	}
+
+	.recycle-list {
+		height: 0;
 		flex-grow: 1;
 	}
 
