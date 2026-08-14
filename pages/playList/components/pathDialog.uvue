@@ -74,27 +74,41 @@
 </script>
 
 <template>
-	<page-container :show="showDialog" position="center" :round="true" @beforeleave="handleCancel">
-		<text class="dialog-title">选择路径</text>
-		<scroll-view class="dialog-container">
-			<view class="folder-item" hover-class="folder-active" @click="handleBack" v-if="currentPid.length > 1">
-				<text class="folder-name root-name">返回上一级</text>
-				<uni-icons color="#ccc" type="right" size="22"></uni-icons>
+	<page-container :show="showDialog" position="center" :round="true"
+		custom-style="background-color: transparent; align-items: center; justify-content: center;"
+		@beforeleave="handleCancel">
+		<view class="dialog-panel">
+			<text class="dialog-title">选择路径</text>
+			<scroll-view class="dialog-container">
+				<view class="folder-item" hover-class="folder-active" @click="handleBack" v-if="currentPid.length > 1">
+					<text class="folder-name root-name">返回上一级</text>
+					<uni-icons color="#ccc" type="right" size="22"></uni-icons>
+				</view>
+				<view class="folder-item" hover-class="folder-active" v-for="item in currentDirList" :key="item.fid"
+					@click="handleSelectDir(item)">
+					<text class="folder-name ellipsis">{{item.fn}}</text>
+					<uni-icons v-if="item.fc == '0'" color="#ccc" type="right" size="22"></uni-icons>
+				</view>
+			</scroll-view>
+			<view class="deal-container">
+				<button class="deal-btn" @click="handleCancel">取消</button>
+				<button class="deal-btn" @click="handleSure">确定</button>
 			</view>
-			<view class="folder-item" hover-class="folder-active" v-for="item in currentDirList" :key="item.fid"
-				@click="handleSelectDir(item)">
-				<text class="folder-name ellipsis">{{item.fn}}</text>
-				<uni-icons v-if="item.fc == '0'" color="#ccc" type="right" size="22"></uni-icons>
-			</view>
-		</scroll-view>
-		<view class="deal-container">
-			<button class="deal-btn" @click="handleCancel">取消</button>
-			<button class="deal-btn" @click="handleSure">确定</button>
 		</view>
 	</page-container>
 </template>
 
 <style scoped lang="scss">
+	.dialog-panel {
+		width: 300px;
+		height: 500px;
+		background-color: #ffffff;
+		border-radius: 12px;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
 	.dialog-title {
 		padding: 10px;
 		font-weight: 700;
@@ -103,7 +117,8 @@
 
 	.dialog-container {
 		width: 300px;
-		height: 400px;
+		height: 0;
+		flex-grow: 1;
 		border-top: 1px solid #eee;
 
 		.folder-item {
@@ -135,12 +150,15 @@
 
 	.deal-container {
 		width: 300px;
+		height: 48px;
+		flex-shrink: 0;
 		display: flex;
 		align-items: center;
 		flex-direction: row;
 
 		.deal-btn {
 			flex: 1;
+			height: 48px;
 			background-color: transparent;
 			border-radius: 0;
 		}

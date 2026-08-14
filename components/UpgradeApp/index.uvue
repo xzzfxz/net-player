@@ -44,20 +44,40 @@
 
 <template>
 	<page-container :show="showDialog" position="center" :round="true" overlay-style="pointer-events: none;"
+		custom-style="background-color: transparent; align-items: center; justify-content: center;"
 		@beforeleave="handleCancel">
-		<text class="dialog-title">是否现在升级?</text>
-		<view style="margin-left: 20px;">最新版本：{{props.version}}</view>
-		<view class="progress-container">
-			<progress class="progress" :percent="currentProgress" :stroke-width="3" />
-		</view>
-		<view class="deal-container">
-			<button class="deal-btn" @click="handleCancel">取消</button>
-			<button class="deal-btn" @click="handleSure">确定</button>
+		<view class="dialog-panel">
+			<view class="dialog-content">
+				<text class="dialog-title">是否现在升级?</text>
+				<view style="margin-left: 20px;">最新版本：{{props.version}}</view>
+				<view class="progress-container">
+					<progress class="progress" :percent="currentProgress" :stroke-width="3" />
+				</view>
+			</view>
+			<view class="deal-container">
+				<button class="deal-btn" @click="handleCancel">取消</button>
+				<button class="deal-btn" @click="handleSure">确定</button>
+			</view>
 		</view>
 	</page-container>
 </template>
 
 <style lang="scss">
+	.dialog-panel {
+		width: 300px;
+		height: 220px;
+		background-color: #ffffff;
+		border-radius: 12px;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.dialog-content {
+		height: 0;
+		flex-grow: 1;
+	}
+
 	.dialog-title {
 		width: 300px;
 		padding: 20px;
@@ -74,13 +94,15 @@
 
 	.deal-container {
 		width: 300px;
-		margin-top: 20px;
+		height: 48px;
+		flex-shrink: 0;
 		display: flex;
 		align-items: center;
 		flex-direction: row;
 
 		.deal-btn {
 			flex: 1;
+			height: 48px;
 			background-color: transparent;
 			border-radius: 0;
 		}

@@ -18,6 +18,7 @@
 	const refreshing = ref(false)
 	const scrollIntoViewId = ref("")
 	const currentSongList = shallowRef<ISongItem[]>([])
+	const deleteMenuSongId = ref("")
 	const timeOut = ref(0)
 
 	function loadDataByPage(offset : number, list : ISongItem[]) {
@@ -63,7 +64,16 @@
 
 	// 设置当前分组
 	const handleSetCurrentGroup = () => {
+		deleteMenuSongId.value = ""
 		setCurrentGroup(groupInfo.value)
+	}
+
+	const handleShowDelete = (songId : string) => {
+		deleteMenuSongId.value = songId
+	}
+
+	const handleHideDelete = () => {
+		deleteMenuSongId.value = ""
 	}
 
 	// 加载数据
@@ -154,6 +164,7 @@
 
 	// 删除
 	const handleDeleteItem = async (songData : ISongItem) => {
+		deleteMenuSongId.value = ""
 		// 从线上删除
 		const res = await deleteFile(songData.id, groupInfo.value.id)
 		if (res) {
@@ -178,7 +189,7 @@
 </script>
 
 <template>
-	<view class="play-container safe-area-bottom">
+	<view class="play-container safe-area-bottom" @click="handleHideDelete">
 		<NavigationBar showLeft showRight title="首页" @leftClick="handleBack" @rightClick="handleChagePath">
 			<template #right>
 				<uni-icons color="#fff" type="folder-add" size="30"></uni-icons>
@@ -191,11 +202,12 @@
 		</view>
 		<text class="count-text">共{{ currentSongList.length }}首</text>
 		<list-view class="list-container" refresher-enabled="true" :refresher-triggered="refreshing"
-			:scroll-into-view="scrollIntoViewId" @refresherrefresh="handleRefresh()">
+			:scroll-into-view="scrollIntoViewId" @click="handleHideDelete" @refresherrefresh="handleRefresh()">
 			<list-item class="list-item" v-for="(item, index) in currentSongList" :id="'view_' + item.id"
 				:key="item.id">
-				<SongItem :song="item" :songIndex="index + 1" @setCurrentGroup="handleSetCurrentGroup"
-					@delete="handleDeleteItem(item)" />
+				<SongItem :song="item" :songIndex="index + 1" :showDelete="deleteMenuSongId == item.id"
+					@setCurrentGroup="handleSetCurrentGroup" @showDelete="handleShowDelete(item.id)"
+					@hideDelete="handleHideDelete" @delete="handleDeleteItem(item)" />
 			</list-item>
 		</list-view>
 		<view class="control-container">

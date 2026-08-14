@@ -6,7 +6,7 @@
 	import { mainStore } from "@/store/index.uts"
 	import { deleteFile } from "@/utils/file.uts"
 
-	const emit = defineEmits(["setCurrentGroup", 'delete'])
+	const emit = defineEmits(["setCurrentGroup", 'delete', 'showDelete', 'hideDelete'])
 
 	const props = defineProps({
 		song: {
@@ -16,6 +16,10 @@
 		songIndex: {
 			type: Number,
 			default: 1
+		},
+		showDelete: {
+			type: Boolean,
+			default: false
 		}
 	})
 
@@ -27,12 +31,20 @@
 
 	// 播放
 	const handlePlay = () => {
+		if (props.showDelete) {
+			emit('hideDelete')
+			return
+		}
 		emit("setCurrentGroup")
 		handlePreparePlay(songData, false)
 	}
 
 	// 添加到播放列表
 	const handleWaitPlay = () => {
+		if (props.showDelete) {
+			emit('hideDelete')
+			return
+		}
 		handleAddToWaitList(songData)
 	}
 
@@ -45,36 +57,42 @@
 		}
 		emit('delete')
 	}
+
+	// 长按歌曲，显示删除操作
+	const handleLongPress = () => {
+		emit('showDelete')
+	}
 </script>
 
 <template>
-	<l-swipe-cell>
-		<view class="song-container" :class="{selected: selected}" @click="handlePlay">
-			<view class="num-container flex-center">
-				<text class="num">{{props.songIndex}}</text>
-			</view>
-			<view class="img-con" hover-class="img-active" @click.stop="handleWaitPlay">
-				<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png" />
-			</view>
-			<view class="song-info">
-				<text class="song-name ellipsis">{{songData.name}}</text>
-				<text class="singer ellipsis" :class="{'singer-selected': selected}">{{songData.author}}</text>
-			</view>
+	<view class="song-container" :class="{selected: selected}" @click.stop="handlePlay"
+		@longpress.stop="handleLongPress">
+		<view class="num-container flex-center">
+			<text class="num">{{props.songIndex}}</text>
 		</view>
-		<template #right>
-			<view class="right-container flex-center" @click="handleDelete"><text class="delete-text">删除</text></view>
-		</template>
-	</l-swipe-cell>
+		<view class="img-con" hover-class="img-active" @click.stop="handleWaitPlay">
+			<image class="cover" mode="aspectFit" src="@/static/image/default-icon.png" />
+		</view>
+		<view class="song-info">
+			<text class="song-name ellipsis">{{songData.name}}</text>
+			<text class="singer ellipsis" :class="{'singer-selected': selected}">{{songData.author}}</text>
+		</view>
+		<view v-if="props.showDelete" class="delete-popover" @click.stop="handleDelete">
+			<text class="delete-text">删除</text>
+		</view>
+	</view>
 </template>
 
 <style lang="scss" scoped>
 	.song-container {
+		width: 100%;
 		height: 48px;
 		border: 1px solid $borderColor;
 		border-radius: 4px;
 		display: flex;
 		align-items: center;
 		flex-direction: row;
+		position: relative;
 
 		&.selected {
 			border-color: #00c165;
@@ -129,13 +147,22 @@
 		}
 	}
 
-	.right-container {
-		width: 60px;
-		height: 48px;
+	.delete-popover {
+		position: absolute;
+		top: 4px;
+		right: 8px;
+		width: 64px;
+		height: 40px;
+		border-radius: 6px;
 		background-color: $dangerColor;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
 		.delete-text {
-			color: #fff;
+			color: #ffffff;
+			font-size: 14px;
 		}
 	}
+
 </style>

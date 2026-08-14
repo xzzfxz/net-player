@@ -5,6 +5,8 @@
 	import { showToast } from "@/utils"
 	import PlayControl from '@/components/PlayControl/index.uvue'
 
+	const deleteMenuGroupName = ref("")
+
 	// 显示添加分组弹窗
 	const handleRightClick = () => {
 		uni.showModal({
@@ -29,6 +31,10 @@
 
 	// 跳转到列表页
 	const handleToGroupDetail = (group : IGroupItem) => {
+		if (deleteMenuGroupName.value != "") {
+			deleteMenuGroupName.value = ""
+			return
+		}
 		uni.navigateTo({
 			url: `/pages/playList/playList?name=${group.name}&path=${group.path}&id=${group.id}`,
 		})
@@ -36,28 +42,37 @@
 
 	// 删除分组
 	const handleDelete = (group : IGroupItem) => {
+		deleteMenuGroupName.value = ""
 		handleDeleteGroup(group.name)
+	}
+
+	// 长按分组，显示删除操作
+	const handleLongPress = (group : IGroupItem) => {
+		deleteMenuGroupName.value = group.name
+	}
+
+	const handleHideDelete = () => {
+		deleteMenuGroupName.value = ""
 	}
 </script>
 
 <template>
-	<view class="all-container">
+	<view class="all-container" @click="handleHideDelete">
 		<NavigationBar showRight title="首页" @rightClick="handleRightClick">
 			<template #right>
 				<uni-icons color="#fff" type="plusempty" size="30"></uni-icons>
 			</template>
 		</NavigationBar>
-		<scroll-view class="home-container">
-			<l-swipe-cell v-for="item in mainStore.groupList" :key="item.name">
-				<view class="group-item" @click="handleToGroupDetail(item)">
-					<text class="group-name">{{ item.name }}</text>
-					<text class="group-path">{{ item.path }}</text>
+		<scroll-view class="home-container" @click="handleHideDelete">
+			<view class="group-item" v-for="item in mainStore.groupList" :key="item.name"
+				@click.stop="handleToGroupDetail(item)" @longpress.stop="handleLongPress(item)">
+				<text class="group-name">{{ item.name }}</text>
+				<text class="group-path">{{ item.path }}</text>
+				<view v-if="deleteMenuGroupName == item.name" class="delete-popover"
+					@click.stop="handleDelete(item)">
+					<text class="delete-text">删除</text>
 				</view>
-				<template #right>
-					<view class="right-container flex-center" @click="handleDelete(item)"><text
-							class="delete-text">删除</text></view>
-				</template>
-			</l-swipe-cell>
+			</view>
 		</scroll-view>
 		<view class="control-container">
 			<PlayControl />
@@ -83,6 +98,7 @@
 		border: 1px solid $borderColor;
 		border-radius: 8px;
 		justify-content: center;
+		position: relative;
 
 		.group-name {
 			color: $navTextColor;
@@ -95,14 +111,22 @@
 		}
 	}
 
-	.right-container {
-		width: 60px;
-		height: 48px;
+	.delete-popover {
+		position: absolute;
+		top: 4px;
+		right: 8px;
+		width: 64px;
+		height: 40px;
+		border-radius: 6px;
 		background-color: $dangerColor;
-		border-radius: 8px;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 
 		.delete-text {
-			color: #fff;
+			color: #ffffff;
+			font-size: 14px;
 		}
 	}
+
 </style>

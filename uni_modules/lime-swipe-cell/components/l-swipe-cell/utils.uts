@@ -1,5 +1,0 @@
-// @ts-nocheck
-// Configuration
-export const AUTO_CLOSE_AFTER_CLICK = true; // 是否在点击菜单后自动关闭
-export const OPEN_THRESHOLD_PERCENT = 0.3; // 自动打开菜单的滑动阈值百分比
-export const swipeCellInstances:LSwipeCellComponentPublicInstance[] = []
