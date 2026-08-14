@@ -25,7 +25,8 @@
 			"path": "pages/playList/playList",
 			"style": {
 				"navigationStyle": "custom",
-				"navigationBarTitleText": "播放列表"
+				"navigationBarTitleText": "播放列表",
+				"disableScroll": true
 			}
 		}
 	],

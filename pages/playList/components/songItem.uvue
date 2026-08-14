@@ -1,12 +1,11 @@
 <script setup lang="uts">
 	import type { ISongItem } from "@/types";
-	import { handlePreparePlay } from "@/utils/playAudio";
 	import { handleAddToWaitList } from "@/store/play";
 	import { playStore } from "@/store/play.uts"
 	import { mainStore } from "@/store/index.uts"
 	import { deleteFile } from "@/utils/file.uts"
 
-	const emit = defineEmits(["setCurrentGroup", 'delete', 'showDelete', 'hideDelete'])
+	const emit = defineEmits(['delete', 'showDelete', 'hideDelete'])
 
 	const props = defineProps({
 		song: {
@@ -23,21 +22,12 @@
 		}
 	})
 
-	const songData = props.song as ISongItem
+	// uni-recycle-view 会复用组件实例，必须始终从最新 props 读取歌曲
+	const songData = computed(() : ISongItem => props.song as ISongItem)
 
 	const selected = computed(() => {
-		return playStore.currentSong?.id == songData.id
+		return playStore.currentSong?.id == (props.song as ISongItem).id
 	})
-
-	// 播放
-	const handlePlay = () => {
-		if (props.showDelete) {
-			emit('hideDelete')
-			return
-		}
-		emit("setCurrentGroup")
-		handlePreparePlay(songData, false)
-	}
 
 	// 添加到播放列表
 	const handleWaitPlay = () => {
@@ -45,13 +35,14 @@
 			emit('hideDelete')
 			return
 		}
-		handleAddToWaitList(songData)
+		handleAddToWaitList(props.song as ISongItem)
 	}
 
 	// 删除
 	const handleDelete = () => {
 		// 删除本地
-		const lastUrl = mainStore.songLocalPath[songData.id]
+		const currentSong = props.song as ISongItem
+		const lastUrl = mainStore.songLocalPath[currentSong.id]
 		if (lastUrl != null) {
 			deleteFile(lastUrl as string)
 		}
@@ -65,8 +56,7 @@
 </script>
 
 <template>
-	<view class="song-container" :class="{selected: selected}" @click.stop="handlePlay"
-		@longpress.stop="handleLongPress">
+	<view class="song-container" :class="{selected: selected}" @longpress.stop="handleLongPress">
 		<view class="num-container flex-center">
 			<text class="num">{{props.songIndex}}</text>
 		</view>

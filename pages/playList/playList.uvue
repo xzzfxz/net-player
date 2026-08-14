@@ -11,44 +11,42 @@
 	import PlayControl from '@/components/PlayControl/index.uvue'
 	import { Emit_Name } from "@/const"
 	import { playStore } from "@/store/play.uts"
+	import { handlePreparePlay } from '@/utils/playAudio.uts'
+	import { LayoutItem } from '@/uni_modules/uni-recycle-view/common/types.uts'
 
 	const filterValue = ref("")
 	const showPathDialog = ref(false)
 	const groupInfo = ref<IGroupItem>({ name: "", path: "", id: "" })
 	const refreshing = ref(false)
-	const scrollIntoViewId = ref("")
 	const currentSongList = shallowRef<ISongItem[]>([])
 	const deleteMenuSongId = ref("")
 	const timeOut = ref(0)
+	const listScrollTop = ref(0)
+	const songItemHeight = 52
 
-	function loadDataByPage(offset : number, list : ISongItem[]) {
-		let endIndex = offset + 30;
-		currentSongList.value = list.slice(0, endIndex)
-		if (endIndex > list.length) {
-			return;
+	const updateSongList = () => {
+		const list : ISongItem[] = mainStore.groupSongArray.find(item => item.groupName == groupInfo.value.name)?.songList ?? []
+		let lastList = list
+		if (filterValue.value != "") {
+			const lowerInput = filterValue.value.toLowerCase()
+			lastList = list.filter(item => {
+				const lowerName = item.namePinYin as string
+				const lowerAuthor = item.authorPinYin as string
+				return lowerName.includes(lowerInput) || lowerAuthor.includes(lowerInput)
+			})
 		}
-		setTimeout(() => {
-			currentSongList.value = list;
-		}, 300)
+		// uni-recycle-view 只渲染可视区域，可以一次传入完整列表
+		currentSongList.value = lastList
 	}
 
-	const handleSetList = () => {
+	const handleFilterInput = () => {
 		if (timeOut.value != 0) {
 			clearTimeout(timeOut.value)
 			timeOut.value = 0
 		}
-		setTimeout(() => {
-			const list : ISongItem[] = mainStore.groupSongArray.find(item => item.groupName == groupInfo.value.name)?.songList ?? []
-			let lastList = list;
-			if (filterValue.value != "") {
-				const lowerInput = filterValue.value.toLowerCase();
-				lastList = list.filter(item => {
-					const lowerName = item.namePinYin as string;
-					const lowerAuthor = item.authorPinYin as string;
-					return lowerName.includes(lowerInput) || lowerAuthor.includes(lowerInput)
-				})
-			}
-			loadDataByPage(0, lastList)
+		timeOut.value = setTimeout(() => {
+			timeOut.value = 0
+			updateSongList()
 		}, 100)
 	}
 
@@ -62,10 +60,15 @@
 		showPathDialog.value = true;
 	}
 
-	// 设置当前分组
-	const handleSetCurrentGroup = () => {
+	// 播放歌曲。事件放在虚拟列表插槽内，始终使用当前渲染的 item
+	const handlePlayItem = (songData : ISongItem) => {
+		if (deleteMenuSongId.value == songData.id) {
+			deleteMenuSongId.value = ""
+			return
+		}
 		deleteMenuSongId.value = ""
 		setCurrentGroup(groupInfo.value)
+		handlePreparePlay(songData, false)
 	}
 
 	const handleShowDelete = (songId : string) => {
@@ -111,15 +114,16 @@
 			});
 			setGroupSongMap(groupInfo.value.name, songList, offset > 0)
 			if (songList.length === limit) {
-				handleLoadData(offset + limit);
+				await handleLoadData(offset + limit)
 			}
 		} catch (err) {
 			console.log("获取文件列表失败", err)
 			showToast("获取文件列表失败", "error")
 			return
 		} finally {
-			// 重新加载数据
-			handleSetList()
+			if (offset == 0) {
+				updateSongList()
+			}
 		}
 	};
 
@@ -141,10 +145,21 @@
 		refreshing.value = false
 	}
 
-	// 滚动到顶部
-	const handleScrollToView = (index : number) => {
-		scrollIntoViewId.value = "view_" + currentSongList.value[index].id
+	// 固定行高下通过 scroll-top 精确定位，避免虚拟列表中目标元素尚未渲染
+	const handleScrollToIndex = (index : number) => {
+		if (currentSongList.value.length == 0) {
+			return
+		}
+		const lastIndex = currentSongList.value.length - 1
+		const safeIndex = Math.max(0, Math.min(index, lastIndex))
+		const target = safeIndex * songItemHeight
+		// 先改变一次数值，确保重复点击同一定位按钮也能触发滚动
+		listScrollTop.value = target == 0 ? 1 : target - 1
+		nextTick(() => {
+			listScrollTop.value = target
+		})
 	}
+
 	// 滚动到播放位置
 	const handleScrollToPlay = (id : string, force : boolean) => {
 		if (id == "") {
@@ -153,13 +168,20 @@
 		if (!playStore.autoScrollToPlay && !force) {
 			return;
 		}
-		scrollIntoViewId.value = "view_" + id
+		const index = currentSongList.value.findIndex(item => item.id == id)
+		if (index >= 0) {
+			handleScrollToIndex(index)
+		}
 	}
 
 	// 清除过滤
 	const handleClearFilter = () => {
+		if (timeOut.value != 0) {
+			clearTimeout(timeOut.value)
+			timeOut.value = 0
+		}
 		filterValue.value = ""
-		handleSetList()
+		updateSongList()
 	}
 
 	// 删除
@@ -170,7 +192,7 @@
 		if (res) {
 			showToast('删除成功', 'success')
 			handleDeleteGroupSong(groupInfo.value.name, songData.id)
-			handleSetList()
+			updateSongList()
 		}
 	}
 
@@ -181,10 +203,14 @@
 		const path = options["path"] ?? "";
 		const id = options["id"] ?? "";
 		groupInfo.value = { name, path, id } as IGroupItem;
-		handleSetList()
+		updateSongList()
 	})
 	onUnload(() => {
 		uni.$off(Emit_Name.SCROLL_TO_PLAY as string, handleScrollToPlay)
+		if (timeOut.value != 0) {
+			clearTimeout(timeOut.value)
+			timeOut.value = 0
+		}
 	})
 </script>
 
@@ -196,30 +222,37 @@
 			</template>
 		</NavigationBar>
 		<view class="filter-container">
-			<input v-model="filterValue" class="filter-input" placeholder="请输入歌名或歌手" @input="handleSetList"></input>
+			<input v-model="filterValue" class="filter-input" placeholder="请输入歌名或歌手" @input="handleFilterInput"></input>
 			<uni-icons v-if="filterValue" class="filter-icon" color="#ccc" type="close" size="30"
 				@click="handleClearFilter"></uni-icons>
 		</view>
 		<text class="count-text">共{{ currentSongList.length }}首</text>
-		<list-view class="list-container" refresher-enabled="true" :refresher-triggered="refreshing"
-			:scroll-into-view="scrollIntoViewId" @click="handleHideDelete" @refresherrefresh="handleRefresh()">
-			<list-item class="list-item" v-for="(item, index) in currentSongList" :id="'view_' + item.id"
-				:key="item.id">
-				<SongItem :song="item" :songIndex="index + 1" :showDelete="deleteMenuSongId == item.id"
-					@setCurrentGroup="handleSetCurrentGroup" @showDelete="handleShowDelete(item.id)"
-					@hideDelete="handleHideDelete" @delete="handleDeleteItem(item)" />
-			</list-item>
-		</list-view>
+		<uni-recycle-view class="list-container" :list="currentSongList" :itemHeight="songItemHeight"
+			:scroll-top="listScrollTop" :refresher-enabled="true" :refresher-triggered="refreshing"
+			@refresherrefresh="handleRefresh()">
+			<template v-slot:default="{ layoutItems, items }">
+				<uni-recycle-item class="list-item" v-for="(item, index) in (items as ISongItem[])"
+					:key="(layoutItems as LayoutItem[])[index].id"
+					:offset="(layoutItems as LayoutItem[])[index].offset">
+					<view class="song-click-area" @click.stop="handlePlayItem(item)">
+						<SongItem :song="item"
+							:songIndex="Math.floor((layoutItems as LayoutItem[])[index].offset / songItemHeight) + 1"
+							:showDelete="deleteMenuSongId == item.id" @showDelete="handleShowDelete(item.id)"
+							@hideDelete="handleHideDelete" @delete="handleDeleteItem(item)" />
+					</view>
+				</uni-recycle-item>
+			</template>
+		</uni-recycle-view>
 		<view class="control-container">
 			<PlayControl />
 		</view>
 		<PathDialog v-if="showPathDialog" @close="showPathDialog = false" @sure="handlePathSure" />
 		<view class="float-view">
-			<view class="aim-button up-button flex-center" hover-class="aim-hover" @click="handleScrollToView(0)">
+			<view class="aim-button up-button flex-center" hover-class="aim-hover" @click="handleScrollToIndex(0)">
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.up"></Icon>
 			</view>
 			<view class="aim-button up-button flex-center" hover-class="aim-hover"
-				@click="handleScrollToView(currentSongList.length - 1)">
+				@click="handleScrollToIndex(currentSongList.length - 1)">
 				<Icon class="aim-icon" className="aim-icon" :name="Font_Info.down"></Icon>
 			</view>
 			<view class="aim-button flex-center" hover-class="aim-hover"
@@ -270,10 +303,17 @@
 		height: 0;
 		padding: 0 10px;
 		flex-grow: 1;
+	}
 
-		.list-item {
-			margin-bottom: 4px;
-		}
+	.list-item {
+		height: 52px;
+		padding-bottom: 4px;
+		box-sizing: border-box;
+	}
+
+	.song-click-area {
+		width: 100%;
+		height: 48px;
 	}
 
 	.control-container {
