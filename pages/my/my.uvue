@@ -90,12 +90,19 @@
 		<NavigationBar title="我的">
 		</NavigationBar>
 		<view class="login-container">
-			<button class="login-btn" @click="handleLogin">登录
+			<view class="login-btn" hover-class="login-btn-hover" @tap="handleLogin">
+				<text class="login-btn-text">登录</text>
 				<text class="login-status" v-if="mainStore.accessToken">(已登录)</text>
-			</button>
-			<button class="login-btn" @click="handleRefreshToken">刷新登录状态</button>
-			<button class="login-btn warn" type="warn" @click="handleClearCache">清除缓存({{cacheSize}})</button>
-			<button class="login-btn check" @click="handleCheckVersion">检查更新</button>
+			</view>
+			<view class="login-btn" hover-class="login-btn-hover" @tap="handleRefreshToken">
+				<text class="login-btn-text">刷新登录状态</text>
+			</view>
+			<view class="login-btn warn" hover-class="login-btn-hover" @tap="handleClearCache">
+				<text class="login-btn-text">清除缓存({{cacheSize}})</text>
+			</view>
+			<view class="login-btn check" hover-class="login-btn-hover" @tap="handleCheckVersion">
+				<text class="login-btn-text">检查更新</text>
+			</view>
 		</view>
 		<view class="version-container">
 			<text class="text">v{{currentVersion}}</text>
@@ -114,10 +121,16 @@
 		padding: 10px;
 
 		.login-btn {
+			width: 100%;
+			height: 46px;
 			margin-bottom: 10px;
 			border: 1px solid $borderColor;
+			border-radius: 5px;
 			background-color: transparent;
-			color: $navTextColor;
+			box-sizing: border-box;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
 
 			&.warn {
 				background-color: #ff4444;
@@ -126,6 +139,14 @@
 			&.check {
 				margin-top: 40px;
 			}
+		}
+
+		.login-btn-hover {
+			opacity: 0.75;
+		}
+
+		.login-btn-text {
+			color: $navTextColor;
 		}
 
 		.login-status {

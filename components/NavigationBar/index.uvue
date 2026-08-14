@@ -32,19 +32,19 @@
 		<view class="status-bar"></view>
 		<view class="navigation-bar">
 			<view class="back-container flex-center">
-				<button class="back-btn" hover-class="back-btn-hover" v-if="props.showLeft" @click="handleLeftClick">
+				<view class="back-btn" hover-class="back-btn-hover" v-if="props.showLeft" @tap="handleLeftClick">
 					<slot name="left">
 						<uni-icons color="#fff" type="left" size="30"></uni-icons>
 					</slot>
-				</button>
+				</view>
 			</view>
 			<text class="title">{{ props.title }}</text>
 			<view class="back-container flex-center">
-				<button class="back-btn" hover-class="back-btn-hover" v-if="props.showRight" @click="handleRightClick">
+				<view class="back-btn" hover-class="back-btn-hover" v-if="props.showRight" @tap="handleRightClick">
 					<slot name="right">
 						<uni-icons color="#fff" type="right" size="30"></uni-icons>
 					</slot>
-				</button>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -77,7 +77,12 @@
 		}
 
 		.back-btn {
+			width: 40px;
+			height: 40px;
 			background-color: transparent;
+			border-radius: 20px;
+			align-items: center;
+			justify-content: center;
 		}
 
 		.title {

@@ -85,24 +85,24 @@
 				</view>
 			</view>
 			<view class="control-container">
-				<button class="control-btn" @click="handleChangePlayMode">
+				<view class="control-btn" hover-class="control-btn-hover" @tap="handleChangePlayMode">
 					<Icon class="control-icon" className="selected" v-if="mainStore.playMode == 'random'"
 						:name="Font_Info.random"></Icon>
 					<Icon class="control-icon" className="selected" v-else-if="mainStore.playMode == 'single'"
 						:name="Font_Info.singleLoop"></Icon>
 					<Icon class="control-icon" className="selected" v-else :name="Font_Info.loop"></Icon>
-				</button>
-				<button class="control-btn" @click="handleToPlayPre">
+				</view>
+				<view class="control-btn" hover-class="control-btn-hover" @tap="handleToPlayPre">
 					<Icon class="control-icon" className="selected" :name="Font_Info.prePlay"></Icon>
-				</button>
-				<button class="control-btn" @click="handlePlayPause">
+				</view>
+				<view class="control-btn" hover-class="control-btn-hover" @tap="handlePlayPause">
 					<Icon class="control-icon" className="selected" v-if="playStore.isPlaying" :name="Font_Info.play">
 					</Icon>
 					<Icon class="control-icon" className="selected" v-else :name="Font_Info.pause"></Icon>
-				</button>
-				<button class="control-btn" @click="handleToPlayNext">
+				</view>
+				<view class="control-btn" hover-class="control-btn-hover" @tap="handleToPlayNext">
 					<Icon class="control-icon" className="selected" :name="Font_Info.nextPlay"></Icon>
-				</button>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -161,12 +161,20 @@
 	}
 
 	.control-btn {
-		margin-right: 6px;
+		width: 44px;
+		height: 44px;
 		background-color: transparent;
-		border-color: $tabBarSelectColor;
+		border: 1px solid $tabBarSelectColor;
+		border-radius: 22px;
+		align-items: center;
+		justify-content: center;
 
 		.control-icon {
 			font-size: 24px;
 		}
+	}
+
+	.control-btn-hover {
+		background-color: rgba(76, 226, 225, 0.18);
 	}
 </style>

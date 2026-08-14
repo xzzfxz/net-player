@@ -46,21 +46,21 @@
 			<text class="song-name ellipsis">{{playStore.currentSong?.name}}</text>
 			<text class="song-artist ellipsis">{{playStore.currentSong?.author}}</text>
 		</view>
-		<button class="control-btn" @click="handlePlayPre">
+		<view class="control-btn" hover-class="control-btn-hover" @tap="handleToPlayPre">
 			<Icon class="control-icon" :name="Font_Info.prePlay"></Icon>
-		</button>
-		<button class="control-btn" @click="handlePlayPause">
+		</view>
+		<view class="control-btn" hover-class="control-btn-hover" @tap="handlePlayPause">
 			<Icon class="control-icon" v-if="playStore.isPlaying" :name="Font_Info.play"></Icon>
 			<Icon class="control-icon" v-else :name="Font_Info.pause"></Icon>
-		</button>
-		<button class="control-btn" @click="handleToPlayNext">
+		</view>
+		<view class="control-btn" hover-class="control-btn-hover" @tap="handleToPlayNext">
 			<Icon class="control-icon" :name="Font_Info.nextPlay"></Icon>
-		</button>
-		<button class="control-btn" @click="handleChangePlayMode">
+		</view>
+		<view class="control-btn" hover-class="control-btn-hover" @tap="handleChangePlayMode">
 			<Icon class="control-icon" v-if="mainStore.playMode == 'random'" :name="Font_Info.random"></Icon>
 			<Icon class="control-icon" v-else-if="mainStore.playMode == 'single'" :name="Font_Info.singleLoop"></Icon>
 			<Icon class="control-icon" v-else :name="Font_Info.loop"></Icon>
-		</button>
+		</view>
 	</view>
 </template>
 
@@ -100,13 +100,21 @@
 	}
 
 	.control-btn {
-		padding: 0 4px;
-		margin-right: 6px;
+		width: 40px;
+		height: 40px;
+		margin-right: 4px;
 		background-color: transparent;
-		border-color: #ccc;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		align-items: center;
+		justify-content: center;
 
 		.control-icon {
 			font-size: 24px;
 		}
+	}
+
+	.control-btn-hover {
+		background-color: rgba(255, 255, 255, 0.18);
 	}
 </style>

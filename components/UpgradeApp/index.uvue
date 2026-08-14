@@ -55,8 +55,12 @@
 				</view>
 			</view>
 			<view class="deal-container">
-				<button class="deal-btn" @click="handleCancel">取消</button>
-				<button class="deal-btn" @click="handleSure">确定</button>
+				<view class="deal-btn" hover-class="deal-btn-hover" @tap="handleCancel">
+					<text class="deal-btn-text">取消</text>
+				</view>
+				<view class="deal-btn right-deal-btn" hover-class="deal-btn-hover" @tap="handleSure">
+					<text class="deal-btn-text">确定</text>
+				</view>
 			</view>
 		</view>
 	</page-container>
@@ -104,7 +108,21 @@
 			flex: 1;
 			height: 48px;
 			background-color: transparent;
-			border-radius: 0;
+			border-top: 1px solid #eeeeee;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.right-deal-btn {
+			border-left: 1px solid #eeeeee;
+		}
+
+		.deal-btn-hover {
+			background-color: #f3f3f3;
+		}
+
+		.deal-btn-text {
+			color: #333333;
 		}
 	}
 </style>
